@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle } from "lucide-react";
+import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle, Crown, Grid3X3, User, Eye, SwatchBook, History } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -142,10 +142,64 @@ const Index = () => {
     },
   });
 
+  const { data: designers } = useQuery({
+    queryKey: ["designers"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("designers").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: prints } = useQuery({
+    queryKey: ["prints"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("prints").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: bodyTypes } = useQuery({
+    queryKey: ["body_types"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("body_types").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const { data: clientProfiles } = useQuery({
     queryKey: ["client_profiles"],
     queryFn: async () => {
       const { data, error } = await supabase.from("client_profiles").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: photoAnalyses } = useQuery({
+    queryKey: ["photo_analyses"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("photo_analyses").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: savedPalettes } = useQuery({
+    queryKey: ["saved_palettes"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("saved_palettes").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: sessionHistory } = useQuery({
+    queryKey: ["session_history"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("session_history").select("id");
       if (error) throw error;
       return data;
     },
@@ -258,6 +312,27 @@ const Index = () => {
       icon: <Circle className="h-5 w-5 text-amber-700" />,
       color: "bg-amber-100"
     },
+    { 
+      title: "Designers", 
+      count: designers?.length || 0, 
+      description: "Fashion designer references",
+      icon: <Crown className="h-5 w-5 text-fuchsia-700" />,
+      color: "bg-fuchsia-100"
+    },
+    { 
+      title: "Prints", 
+      count: prints?.length || 0, 
+      description: "Pattern categories",
+      icon: <Grid3X3 className="h-5 w-5 text-cyan-700" />,
+      color: "bg-cyan-100"
+    },
+    { 
+      title: "Body Types", 
+      count: bodyTypes?.length || 0, 
+      description: "Style systems",
+      icon: <User className="h-5 w-5 text-lime-700" />,
+      color: "bg-lime-100"
+    },
   ];
 
   const appDataStats = [
@@ -267,6 +342,27 @@ const Index = () => {
       description: "From Client App",
       icon: <Users className="h-5 w-5 text-indigo-700" />,
       color: "bg-indigo-100"
+    },
+    { 
+      title: "Photo Analyses", 
+      count: photoAnalyses?.length || 0, 
+      description: "Client color analyses",
+      icon: <Eye className="h-5 w-5 text-sky-700" />,
+      color: "bg-sky-100"
+    },
+    { 
+      title: "Saved Palettes", 
+      count: savedPalettes?.length || 0, 
+      description: "Client palettes",
+      icon: <SwatchBook className="h-5 w-5 text-orange-700" />,
+      color: "bg-orange-100"
+    },
+    { 
+      title: "Sessions", 
+      count: sessionHistory?.length || 0, 
+      description: "Consultation history",
+      icon: <History className="h-5 w-5 text-emerald-700" />,
+      color: "bg-emerald-100"
     },
     { 
       title: "Training Samples", 
