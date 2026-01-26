@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle, Crown, Grid3X3, User, Eye, SwatchBook, History, AlertTriangle, CheckCircle2, XCircle, AlertCircle, ChevronDown } from "lucide-react";
@@ -6,7 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import * as CollapsiblePrimitive from "@radix-ui/react-collapsible";
+
+const Collapsible = CollapsiblePrimitive.Root;
+const CollapsibleTrigger = CollapsiblePrimitive.Trigger;
+const CollapsibleContent = CollapsiblePrimitive.Content;
 interface StatCardProps {
   title: string;
   count: number;
