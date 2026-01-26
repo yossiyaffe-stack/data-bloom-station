@@ -408,6 +408,56 @@ export type Database = {
         }
         Relationships: []
       }
+      makeup_recommendations: {
+        Row: {
+          category: string
+          color_hex: string | null
+          color_name: string | null
+          created_at: string | null
+          finish: string | null
+          id: string
+          intensity: string | null
+          is_primary: boolean | null
+          notes: string | null
+          product_type: string | null
+          subtype_id: string | null
+        }
+        Insert: {
+          category: string
+          color_hex?: string | null
+          color_name?: string | null
+          created_at?: string | null
+          finish?: string | null
+          id?: string
+          intensity?: string | null
+          is_primary?: boolean | null
+          notes?: string | null
+          product_type?: string | null
+          subtype_id?: string | null
+        }
+        Update: {
+          category?: string
+          color_hex?: string | null
+          color_name?: string | null
+          created_at?: string | null
+          finish?: string | null
+          id?: string
+          intensity?: string | null
+          is_primary?: boolean | null
+          notes?: string | null
+          product_type?: string | null
+          subtype_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "makeup_recommendations_subtype_id_fkey"
+            columns: ["subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       masterpiece_paintings: {
         Row: {
           artist_id: string | null
@@ -466,6 +516,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      metals: {
+        Row: {
+          color_hex: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          price_tier: string | null
+          seasons: Json | null
+          slug: string
+          warmth: string | null
+        }
+        Insert: {
+          color_hex?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          price_tier?: string | null
+          seasons?: Json | null
+          slug: string
+          warmth?: string | null
+        }
+        Update: {
+          color_hex?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          price_tier?: string | null
+          seasons?: Json | null
+          slug?: string
+          warmth?: string | null
+        }
+        Relationships: []
       }
       methodology_metadata: {
         Row: {
@@ -630,6 +716,48 @@ export type Database = {
           name?: string
           undertone?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      sephirot_colors: {
+        Row: {
+          associated_body_part: string | null
+          associated_seasons: Json | null
+          attributes: Json | null
+          color_hex: string
+          created_at: string | null
+          hebrew_name: string | null
+          id: string
+          meaning: string | null
+          name: string
+          position_on_tree: number | null
+          slug: string
+        }
+        Insert: {
+          associated_body_part?: string | null
+          associated_seasons?: Json | null
+          attributes?: Json | null
+          color_hex: string
+          created_at?: string | null
+          hebrew_name?: string | null
+          id?: string
+          meaning?: string | null
+          name: string
+          position_on_tree?: number | null
+          slug: string
+        }
+        Update: {
+          associated_body_part?: string | null
+          associated_seasons?: Json | null
+          attributes?: Json | null
+          color_hex?: string
+          created_at?: string | null
+          hebrew_name?: string | null
+          id?: string
+          meaning?: string | null
+          name?: string
+          position_on_tree?: number | null
+          slug?: string
         }
         Relationships: []
       }
@@ -895,6 +1023,45 @@ export type Database = {
           },
           {
             foreignKeyName: "subtype_gemstones_subtype_id_fkey"
+            columns: ["subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subtype_metals: {
+        Row: {
+          id: string
+          metal_id: string | null
+          notes: string | null
+          rating: string
+          subtype_id: string | null
+        }
+        Insert: {
+          id?: string
+          metal_id?: string | null
+          notes?: string | null
+          rating: string
+          subtype_id?: string | null
+        }
+        Update: {
+          id?: string
+          metal_id?: string | null
+          notes?: string | null
+          rating?: string
+          subtype_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subtype_metals_metal_id_fkey"
+            columns: ["metal_id"]
+            isOneToOne: false
+            referencedRelation: "metals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subtype_metals_subtype_id_fkey"
             columns: ["subtype_id"]
             isOneToOne: false
             referencedRelation: "subtypes"
