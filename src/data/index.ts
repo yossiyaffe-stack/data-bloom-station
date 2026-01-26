@@ -9,3 +9,8 @@ export * from './kabbalisticSystem';
 // Raw JSON data for Kabbalistic system
 import kabbalisticColorData from './kabbalisticColorData.json';
 export { kabbalisticColorData };
+
+// Complete color analysis algorithm with all 40 subtypes
+export * from './algorithm';
+import algorithmData from './algorithm';
+export { algorithmData };
