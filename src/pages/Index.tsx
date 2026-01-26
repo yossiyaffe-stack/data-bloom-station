@@ -11,7 +11,9 @@ import {
   SeasonsModal, SubtypesModal, ColorsModal, FabricsModal, GemstonesModal,
   ArtistsModal, ErasModal, PaintingsModal, SephirotModal, MakeupModal,
   MetalsModal, DesignersModal, PrintsModal, BodyTypesModal,
-  CompletionStatusModal, JunctionMappingsModal, SeasonDetailModal
+  CompletionStatusModal, JunctionMappingsModal, SeasonDetailModal,
+  MakeupMappingsModal, FabricMappingsModal, EraMappingsModal,
+  DesignerMappingsModal, GemstoneMappingsModal, ArtistMappingsModal, MetalMappingsModal
 } from "@/components/dashboard/DataModals";
 
 const Collapsible = CollapsiblePrimitive.Root;
@@ -77,10 +79,12 @@ interface CompletionItemProps {
   total: number;
   priority: 'critical' | 'high' | 'medium' | 'low' | 'complete';
   description: string;
+  onClick?: () => void;
 }
 
-const CompletionItem = ({ title, current, total, priority, description }: CompletionItemProps) => {
+const CompletionItem = ({ title, current, total, priority, description, onClick }: CompletionItemProps) => {
   const percentage = Math.round((current / total) * 100);
+  const interactive = typeof onClick === "function";
   
   const priorityConfig = {
     critical: { 
@@ -118,7 +122,19 @@ const CompletionItem = ({ title, current, total, priority, description }: Comple
   const config = priorityConfig[priority];
 
   return (
-    <div className="p-4 rounded-lg border bg-card">
+    <div 
+      className={`p-4 rounded-lg border bg-card transition-all ${interactive ? "cursor-pointer hover:shadow-md hover:border-primary/30" : ""}`}
+      onClick={onClick}
+      role={interactive ? "button" : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (!interactive) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
+    >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           {config.icon}
@@ -576,8 +592,14 @@ const Index = () => {
         <CompletionStatusModal open={isOpen("completionStatus")} onOpenChange={getOpenChange("completionStatus")} />
         <JunctionMappingsModal open={isOpen("junctionMappings")} onOpenChange={getOpenChange("junctionMappings")} />
         <SeasonDetailModal open={isOpen("seasonDetail")} onOpenChange={getOpenChange("seasonDetail")} seasonId={selectedSeasonId} />
-
+        <MakeupMappingsModal open={isOpen("makeupMappings")} onOpenChange={getOpenChange("makeupMappings")} />
+        <FabricMappingsModal open={isOpen("fabricMappings")} onOpenChange={getOpenChange("fabricMappings")} />
+        <EraMappingsModal open={isOpen("eraMappings")} onOpenChange={getOpenChange("eraMappings")} />
+        <DesignerMappingsModal open={isOpen("designerMappings")} onOpenChange={getOpenChange("designerMappings")} />
+        <GemstoneMappingsModal open={isOpen("gemstoneMappings")} onOpenChange={getOpenChange("gemstoneMappings")} />
+        <ArtistMappingsModal open={isOpen("artistMappings")} onOpenChange={getOpenChange("artistMappings")} />
         {/* Header */}
+
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-rose-500 via-purple-500 to-blue-500 flex items-center justify-center">
@@ -628,6 +650,7 @@ const Index = () => {
                 total={totalSubtypes}
                 priority={((makeupCoverage || 0) / totalSubtypes) < 0.3 ? 'critical' : ((makeupCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : 'medium'}
                 description="Lip, blush, eyeshadow, and nail recommendations per subtype"
+                onClick={() => openModalHandler("makeupMappings")}
               />
               <CompletionItem
                 title="Fabric Mappings"
@@ -635,6 +658,7 @@ const Index = () => {
                 total={totalSubtypes}
                 priority={((subtypeFabricsCoverage || 0) / totalSubtypes) < 0.3 ? 'critical' : ((subtypeFabricsCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : 'medium'}
                 description="Recommended fabrics (silk, cotton, velvet, etc.) per subtype"
+                onClick={() => openModalHandler("fabricMappings")}
               />
               <CompletionItem
                 title="Historical Era Links"
@@ -642,6 +666,7 @@ const Index = () => {
                 total={totalSubtypes}
                 priority={((subtypeErasCoverage || 0) / totalSubtypes) < 0.3 ? 'critical' : ((subtypeErasCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : 'medium'}
                 description="Fashion era references (Victorian, Art Deco, etc.) per subtype"
+                onClick={() => openModalHandler("eraMappings")}
               />
               <CompletionItem
                 title="Designer Associations"
@@ -649,6 +674,7 @@ const Index = () => {
                 total={totalSubtypes}
                 priority={((subtypeDesignersCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : 'medium'}
                 description="Designer recommendations (Chanel, Dior, etc.) per subtype"
+                onClick={() => openModalHandler("designerMappings")}
               />
               <CompletionItem
                 title="Gemstone Mappings"
@@ -656,6 +682,7 @@ const Index = () => {
                 total={totalSubtypes}
                 priority={((subtypeGemstonesCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : ((subtypeGemstonesCoverage || 0) / totalSubtypes) < 0.75 ? 'medium' : 'low'}
                 description="Recommended gemstones per subtype"
+                onClick={() => openModalHandler("gemstoneMappings")}
               />
               <CompletionItem
                 title="Artist Inspirations"
@@ -663,6 +690,7 @@ const Index = () => {
                 total={totalSubtypes}
                 priority={((subtypeArtistsCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : ((subtypeArtistsCoverage || 0) / totalSubtypes) < 0.75 ? 'medium' : 'low'}
                 description="Master artist references per subtype"
+                onClick={() => openModalHandler("artistMappings")}
               />
               <CompletionItem
                 title="Metal Recommendations"
@@ -670,6 +698,7 @@ const Index = () => {
                 total={totalSubtypes}
                 priority={((subtypeMetalsCoverage || 0) / totalSubtypes) >= 0.85 ? 'complete' : 'low'}
                 description="Gold, silver, rose gold recommendations per subtype"
+                onClick={() => openModalHandler("metalMappings")}
               />
             </div>
 
