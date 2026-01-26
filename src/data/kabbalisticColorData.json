@@ -1,0 +1,691 @@
+{
+  "metadata": {
+    "title": "Kabbalistic Color System - Streams of Color",
+    "creator": "Nechama Yaffe",
+    "brand": "Streams of Color",
+    "social": {
+      "instagram": "@streams_of_color",
+      "youtube": "@StreamsofColor"
+    },
+    "podcast_appearance": {
+      "show": "Human & Holy with Tonia Chazanow",
+      "episode": "The Kabbalah of Color with Nechama Yaffe",
+      "date": "April 23, 2023",
+      "duration": "55:16",
+      "url": "https://open.spotify.com/show/1mo2kXBh03DA218ZmfBqRb"
+    },
+    "scholarly_sources": [
+      {
+        "author": "Moshe Idel",
+        "title": "Visualization of Colors, 1: David ben Yehudah he-Ḥasid's Kabbalistic Diagram",
+        "publication": "Ars Judaica",
+        "year": 2015
+      },
+      {
+        "author": "Moshe Idel", 
+        "title": "Visualization of Colors, 2: Implications for the History of Kabbalah",
+        "publication": "Ars Judaica",
+        "year": 2016
+      },
+      {
+        "author": "Moshe Idel",
+        "title": "Kabbalistic Prayer and Colors",
+        "publication": "Approaches to Judaism in Medieval Times",
+        "year": "1984-1988"
+      },
+      {
+        "author": "Gershom Scholem",
+        "title": "Colours and Their Symbolism in Jewish Tradition and Mysticism"
+      },
+      {
+        "author": "Rabbi Moshe Cordovero (Ramak)",
+        "title": "Pardes Rimonim, Sha'ar HaGvanim (Gate of Colors)",
+        "century": "16th"
+      },
+      {
+        "author": "Rabbi Aryeh Kaplan",
+        "title": "Meditation and Kabbalah",
+        "page": 181
+      }
+    ]
+  },
+
+  "sefirot_colors_r_david": {
+    "description": "From R. David ben Yehudah he-Ḥasid's diagram (13th-14th century), grandson of the Ramban. As documented by Prof. Moshe Idel.",
+    "source_manuscript": "Milan, Ambrosiana Library, Ms. 62 S 13 Sup. 62, fol. 4r",
+    "transmission_note": "כל אלו הרמזים צריכין קבלה מפה אל פה - All these hints must be transmitted from mouth to mouth",
+    
+    "mappings": [
+      {
+        "sefirah_hebrew": "כתר",
+        "sefirah_transliteration": "Keter",
+        "sefirah_english": "Crown",
+        "color_hebrew": "לבן כשלג",
+        "color_english": "White like snow",
+        "hex": "#FFFAFA",
+        "rgb": [255, 250, 250],
+        "original_text": "כתר עליון הגדול היחוד האמיתי המיוחד בכל שמותיו לבן כשלג",
+        "translation": "The Supernal Great Keter, the true Unity that is united in all its names, white like snow",
+        "notes": "Transcends the structure of the ten sefirot"
+      },
+      {
+        "sefirah_hebrew": "חכמה",
+        "sefirah_transliteration": "Chokmah",
+        "sefirah_english": "Wisdom",
+        "color_hebrew": "תכלית השמים",
+        "color_english": "Blue of heaven / Techelet",
+        "hex": "#4A90D9",
+        "rgb": [74, 144, 217],
+        "original_text": "חכמה תכלית השמים זעיר אנפין",
+        "translation": "Chokmah, the blue of heaven, Ze'ir Anpin",
+        "additional": "Clothed in blue with 377 lights of splendor (גלגלי החכמה כל בניו לבושי תכלת עם ג׳ מאו׳ וע״ז אורות)"
+      },
+      {
+        "sefirah_hebrew": "בינה",
+        "sefirah_transliteration": "Binah", 
+        "sefirah_english": "Understanding",
+        "color_hebrew": "ירוק כקשת",
+        "color_english": "Green as the rainbow",
+        "hex": "#4CAF50",
+        "rgb": [76, 175, 80],
+        "original_text": "בינה ירוק כקשת יהוה ז״א",
+        "translation": "Binah, green as the rainbow",
+        "additional": "Where the holy beasts (חיות הקדש) dwell, clothed in green like the rainbow"
+      },
+      {
+        "sefirah_hebrew": "גדולה / חסד",
+        "sefirah_transliteration": "Gedulah / Chesed",
+        "sefirah_english": "Greatness / Loving-kindness",
+        "color_hebrew": "כסף צרוף",
+        "color_english": "Refined silver",
+        "hex": "#C0C0C0",
+        "rgb": [192, 192, 192],
+        "original_text": "גדולה כסף צרוף יהוה ז״א",
+        "translation": "Gedulah, refined silver",
+        "additional": "Clothed in whiteness of silver and like white waters (לבושים כלובן הכסף וכמים לבנים)"
+      },
+      {
+        "sefirah_hebrew": "גבורה",
+        "sefirah_transliteration": "Gevurah",
+        "sefirah_english": "Strength / Judgment",
+        "color_hebrew": "אדום כאש",
+        "color_english": "Red as fire",
+        "hex": "#C62828",
+        "rgb": [198, 40, 40],
+        "original_text": "גבורה אדום כאש יהוה ז״א",
+        "translation": "Gevurah, red as fire",
+        "additional": "Clothed in the likeness of fire (לבושים כדמות אש)"
+      },
+      {
+        "sefirah_hebrew": "תפארת",
+        "sefirah_transliteration": "Tiferet",
+        "sefirah_english": "Beauty / Harmony",
+        "color_hebrew": "לובן נוטה לאדום",
+        "color_english": "White tending to red",
+        "hex": "#FFCDD2",
+        "rgb": [255, 205, 210],
+        "original_text": "תפארת לובן נוטה לאדום יהוה ז״א",
+        "translation": "Tiferet, white tending toward red",
+        "additional": "Clothed in white and red (לבושים לבן ואדום)"
+      },
+      {
+        "sefirah_hebrew": "נצח",
+        "sefirah_transliteration": "Netzach",
+        "sefirah_english": "Victory / Eternity",
+        "color_hebrew": "לובן נוטה לתכלית",
+        "color_english": "White tending to blue",
+        "hex": "#E3F2FD",
+        "rgb": [227, 242, 253],
+        "original_text": "נצח לובן נוטה לתכלית יהוה ז״א",
+        "translation": "Netzach, white tending toward blue"
+      },
+      {
+        "sefirah_hebrew": "הוד",
+        "sefirah_transliteration": "Hod",
+        "sefirah_english": "Splendor / Gratitude",
+        "color_hebrew": "ירוק נוטה לאדום",
+        "color_english": "Green tending to red",
+        "hex": "#A5D6A7",
+        "rgb": [165, 214, 167],
+        "original_text": "הוד ירוק נוטה לאדום יהוה ז״א",
+        "translation": "Hod, green tending toward red"
+      },
+      {
+        "sefirah_hebrew": "יסוד",
+        "sefirah_transliteration": "Yesod",
+        "sefirah_english": "Foundation",
+        "color_hebrew": "תכלית נוטה לשחור",
+        "color_english": "Blue tending to black",
+        "hex": "#3F51B5",
+        "rgb": [63, 81, 181],
+        "original_text": "יסוד תכלית נוטה לשחור יהוה ז״א",
+        "translation": "Yesod, blue tending toward black"
+      },
+      {
+        "sefirah_hebrew": "מלכות",
+        "sefirah_transliteration": "Malkhut",
+        "sefirah_english": "Kingdom / Sovereignty",
+        "color_hebrew": "גוון שחור",
+        "color_english": "Black hue",
+        "hex": "#212121",
+        "rgb": [33, 33, 33],
+        "original_text": "מלכות גוון שחור יהוה ז״א",
+        "translation": "Malkhut, black hue"
+      }
+    ]
+  },
+
+  "sefirot_colors_ramak": {
+    "description": "From Rabbi Moshe Cordovero (Ramak), Pardes Rimonim, Sha'ar HaGvanim - 16th century Tzfat",
+    "warning": "Ramak warns: 'One must be very careful and not imagine that this is to be taken literally. Color is something physical... The sefirot are spiritual and should not be described with physical properties.'",
+    
+    "mappings": [
+      {
+        "sefirah": "Keter",
+        "color": "Blinding white",
+        "hex": "#FFFFFF",
+        "notes": "Contains all colors within it, source of all light"
+      },
+      {
+        "sefirah": "Chokmah",
+        "color": "Seven colors in concentric circles",
+        "details": "Outermost: deep red, 2nd: white, 3rd: dark green, 4th: light green, 5th: bright sapphire blue, 6th: between dark and light green, 7th innermost: white",
+        "hex_primary": "#1565C0"
+      },
+      {
+        "sefirah": "Binah",
+        "color": "Verdant green with bright egg yolk yellow rows",
+        "hex_green": "#2E7D32",
+        "hex_yellow": "#FDD835"
+      },
+      {
+        "sefirah": "Chesed",
+        "color": "Silver / Silvery white",
+        "hex": "#E0E0E0"
+      },
+      {
+        "sefirah": "Gevurah",
+        "color": "Reddish gold",
+        "hex": "#D4A017"
+      },
+      {
+        "sefirah": "Tiferet",
+        "color": "White with red streaks / Yellow and purple",
+        "hex_primary": "#9C27B0"
+      },
+      {
+        "sefirah": "Netzach",
+        "color": "Light pink / Purple-violet",
+        "hex": "#F8BBD9",
+        "notes": "Associated with Moses, leadership. Purple historically represents royalty."
+      },
+      {
+        "sefirah": "Hod",
+        "color": "Dark pink",
+        "hex": "#C2185B"
+      },
+      {
+        "sefirah": "Yesod",
+        "color": "Orangy yellow (turmeric)",
+        "hex": "#FF8F00"
+      },
+      {
+        "sefirah": "Malkhut",
+        "color": "Dark royal blue",
+        "hex": "#1A237E"
+      }
+    ]
+  },
+
+  "bigdei_kehuna": {
+    "description": "The Eight Garments of the Kohen Gadol - Color Wisdom from the Mishkan",
+    "teaching": "Each garment atones for a specific transgression, teaching that colors carry healing and transformation.",
+    
+    "garments": [
+      {
+        "hebrew": "מעיל",
+        "transliteration": "Me'il",
+        "english": "Robe",
+        "color": "Pure Techelet (תכלת)",
+        "color_english": "Sky blue",
+        "hex": "#4A90D9",
+        "source": "Shemot 28:31-35",
+        "atonement": "Lashon Hara (evil speech)",
+        "spiritual_lesson": "The garment that surrounds us affects how we communicate. Blue connects us to heaven and pure speech.",
+        "styling_advice": "Blue tones for those working on speech, communication, or verbal expression"
+      },
+      {
+        "hebrew": "אפוד",
+        "transliteration": "Ephod",
+        "english": "Apron",
+        "colors": [
+          {"name": "Gold (זהב)", "hex": "#FFD700"},
+          {"name": "Techelet (תכלת)", "hex": "#4A90D9"},
+          {"name": "Argaman (ארגמן)", "hex": "#9C27B0"},
+          {"name": "Tola'at Shani (תולעת שני)", "hex": "#C62828"},
+          {"name": "White Linen (בד לבן)", "hex": "#FFFAFA"}
+        ],
+        "source": "Shemot 28:6-14",
+        "atonement": "Avodah Zarah (idol worship / misplaced priorities)",
+        "spiritual_lesson": "Weaving multiple colors creates wholeness - integration of all aspects of self",
+        "styling_advice": "Multi-toned palettes for those needing to integrate different aspects of themselves"
+      },
+      {
+        "hebrew": "חושן",
+        "transliteration": "Choshen",
+        "english": "Breastplate",
+        "description": "12 precious stones for 12 tribes",
+        "source": "Shemot 28:15-30",
+        "atonement": "Perversion of justice (עיוות הדין)",
+        "spiritual_lesson": "Each person has their unique 'stone' - their essence color. Finding a client's signature color is finding their tribe.",
+        "styling_advice": "Identify the client's 'tribe stone' - their personal color signature"
+      },
+      {
+        "hebrew": "ציץ",
+        "transliteration": "Tzitz",
+        "english": "Forehead Plate / Crown",
+        "color": "Pure Gold (זהב טהור)",
+        "hex": "#FFD700",
+        "source": "Shemot 28:36-38",
+        "atonement": "Azut Panim (brazenness, chutzpah)",
+        "spiritual_lesson": "Gold on the forehead - conscious awareness and holy boldness. The inscription 'קדש ליהוה' reminds us of our sacred purpose.",
+        "styling_advice": "Gold accents near the face for developing healthy confidence without arrogance"
+      },
+      {
+        "hebrew": "כתונת",
+        "transliteration": "Ketonet",
+        "english": "Tunic / Coat",
+        "color": "Pure White Linen (בד לבן)",
+        "hex": "#FFFAFA",
+        "source": "Shemot 28:39",
+        "atonement": "Bloodshed (שפיכות דמים)",
+        "spiritual_lesson": "The base layer is purity - what touches the skin matters most. White represents the soul's inherent purity.",
+        "styling_advice": "White/cream undergarments and base layers for everyone"
+      },
+      {
+        "hebrew": "מכנסיים",
+        "transliteration": "Michnasayim",
+        "english": "Pants / Breeches",
+        "color": "White Linen",
+        "hex": "#FFFAFA",
+        "source": "Shemot 28:42",
+        "atonement": "Gilui Arayot (immorality)",
+        "spiritual_lesson": "Modesty and boundaries are foundational. What covers our foundation affects our spiritual grounding.",
+        "styling_advice": "Grounding, modest foundation pieces"
+      },
+      {
+        "hebrew": "אבנט",
+        "transliteration": "Avnet",
+        "english": "Belt / Sash",
+        "colors": [
+          {"name": "Techelet", "hex": "#4A90D9"},
+          {"name": "Argaman", "hex": "#9C27B0"},
+          {"name": "Tola'at Shani", "hex": "#C62828"},
+          {"name": "White Linen", "hex": "#FFFAFA"}
+        ],
+        "source": "Shemot 28:39",
+        "atonement": "Hirhurei Halev (improper thoughts of the heart)",
+        "spiritual_lesson": "What we wrap around our middle - our core intentions. The belt separates upper (intellectual) from lower (physical).",
+        "styling_advice": "Belts and waist definition as points of spiritual intention and division between mind and body"
+      },
+      {
+        "hebrew": "מצנפת",
+        "transliteration": "Mitznefet",
+        "english": "Turban / Headdress",
+        "color": "White Linen",
+        "hex": "#FFFAFA",
+        "source": "Shemot 28:39",
+        "atonement": "Gasut HaRuach (arrogance)",
+        "spiritual_lesson": "What covers the head - humility and connection to what is Above. The turban reminds us there is something higher.",
+        "styling_advice": "Head coverings, hats, hair accessories as expressions of humility and divine connection"
+      }
+    ]
+  },
+
+  "choshen_stones": {
+    "description": "The 12 Stones of the Choshen (Breastplate) - Each tribe's unique color signature",
+    "teaching": "Each person has their 'tribe' - their unique essence color. Finding someone's signature color is like finding their place in the cosmic tapestry of Israel.",
+    
+    "stones": [
+      {
+        "position": 1,
+        "row": 1,
+        "tribe_hebrew": "ראובן",
+        "tribe_english": "Reuven",
+        "stone_hebrew": "אודם",
+        "stone_transliteration": "Odem",
+        "stone_english": "Ruby / Carnelian",
+        "hex": "#E53935",
+        "quality": "Teshuvah (Return) - The power of transformation",
+        "month": "Nisan",
+        "direction": "South",
+        "meaning": "Reuven means 'see, a son' - the ability to see potential"
+      },
+      {
+        "position": 2,
+        "row": 1,
+        "tribe_hebrew": "שמעון",
+        "tribe_english": "Shimon",
+        "stone_hebrew": "פטדה",
+        "stone_transliteration": "Pitda",
+        "stone_english": "Topaz / Peridot",
+        "hex": "#7CB342",
+        "quality": "Inner listening - Shimon means 'heard'",
+        "month": "Iyar",
+        "meaning": "The power to truly hear and understand"
+      },
+      {
+        "position": 3,
+        "row": 1,
+        "tribe_hebrew": "לוי",
+        "tribe_english": "Levi",
+        "stone_hebrew": "ברקת",
+        "stone_transliteration": "Bareket",
+        "stone_english": "Emerald",
+        "hex": "#00897B",
+        "quality": "Service and teaching - The priestly tribe",
+        "month": "Sivan",
+        "meaning": "Connection, attachment to the divine"
+      },
+      {
+        "position": 4,
+        "row": 2,
+        "tribe_hebrew": "יהודה",
+        "tribe_english": "Yehuda",
+        "stone_hebrew": "נפך",
+        "stone_transliteration": "Nofech",
+        "stone_english": "Garnet / Carbuncle",
+        "hex": "#B71C1C",
+        "quality": "Leadership with gratitude - Yehuda means 'praise'",
+        "month": "Tammuz",
+        "meaning": "Kingship, the royal line of David"
+      },
+      {
+        "position": 5,
+        "row": 2,
+        "tribe_hebrew": "יששכר",
+        "tribe_english": "Yissachar",
+        "stone_hebrew": "ספיר",
+        "stone_transliteration": "Sapir",
+        "stone_english": "Sapphire",
+        "hex": "#1565C0",
+        "quality": "Torah wisdom - The tribe of scholars",
+        "month": "Av",
+        "meaning": "Deep study and understanding of divine wisdom"
+      },
+      {
+        "position": 6,
+        "row": 2,
+        "tribe_hebrew": "זבולון",
+        "tribe_english": "Zevulun",
+        "stone_hebrew": "יהלום",
+        "stone_transliteration": "Yahalom",
+        "stone_english": "Diamond",
+        "hex": "#E0E0E0",
+        "quality": "Commerce with integrity - Supported Torah study",
+        "month": "Elul",
+        "meaning": "The partnership of material and spiritual"
+      },
+      {
+        "position": 7,
+        "row": 3,
+        "tribe_hebrew": "דן",
+        "tribe_english": "Dan",
+        "stone_hebrew": "לשם",
+        "stone_transliteration": "Leshem",
+        "stone_english": "Jacinth / Amber",
+        "hex": "#FF8F00",
+        "quality": "Justice and judgment",
+        "month": "Tishrei",
+        "meaning": "The power to judge fairly"
+      },
+      {
+        "position": 8,
+        "row": 3,
+        "tribe_hebrew": "נפתלי",
+        "tribe_english": "Naftali",
+        "stone_hebrew": "שבו",
+        "stone_transliteration": "Shevo",
+        "stone_english": "Agate",
+        "hex": "#8D6E63",
+        "quality": "Swift service - 'A hind let loose'",
+        "month": "Cheshvan",
+        "meaning": "Speed and agility in serving Hashem"
+      },
+      {
+        "position": 9,
+        "row": 3,
+        "tribe_hebrew": "גד",
+        "tribe_english": "Gad",
+        "stone_hebrew": "אחלמה",
+        "stone_transliteration": "Achlamah",
+        "stone_english": "Amethyst",
+        "hex": "#7B1FA2",
+        "quality": "Courage in battle",
+        "month": "Kislev",
+        "meaning": "Strength and military prowess"
+      },
+      {
+        "position": 10,
+        "row": 4,
+        "tribe_hebrew": "אשר",
+        "tribe_english": "Asher",
+        "stone_hebrew": "תרשיש",
+        "stone_transliteration": "Tarshish",
+        "stone_english": "Beryl / Aquamarine",
+        "hex": "#4DD0E1",
+        "quality": "Abundance and blessing - 'Rich with oil'",
+        "month": "Tevet",
+        "meaning": "Material blessing and satisfaction"
+      },
+      {
+        "position": 11,
+        "row": 4,
+        "tribe_hebrew": "יוסף",
+        "tribe_english": "Yosef",
+        "stone_hebrew": "שהם",
+        "stone_transliteration": "Shoham",
+        "stone_english": "Onyx",
+        "hex": "#37474F",
+        "quality": "Beauty and righteousness - Yosef HaTzaddik",
+        "month": "Shevat",
+        "meaning": "Moral beauty that overcomes temptation"
+      },
+      {
+        "position": 12,
+        "row": 4,
+        "tribe_hebrew": "בנימין",
+        "tribe_english": "Binyamin",
+        "stone_hebrew": "ישפה",
+        "stone_transliteration": "Yashfeh",
+        "stone_english": "Jasper",
+        "hex": "#6D4C41",
+        "quality": "Completeness - The final son, completing the twelve",
+        "month": "Adar",
+        "meaning": "The Shechina rests in his portion (the Temple)"
+      }
+    ]
+  },
+
+  "ibn_ezra_color_system": {
+    "description": "Avraham Ibn Ezra's approach to color - referenced in Nechama Yaffe's teachings",
+    "note": "Ibn Ezra discussed color in relation to astrology, the planets, and their influence on human temperament",
+    
+    "planetary_colors": [
+      {"planet": "Saturn (שבתאי)", "color": "Black", "hex": "#212121", "quality": "Contemplation, depth, boundaries"},
+      {"planet": "Jupiter (צדק)", "color": "Blue", "hex": "#1565C0", "quality": "Expansion, wisdom, blessing"},
+      {"planet": "Mars (מאדים)", "color": "Red", "hex": "#C62828", "quality": "Strength, courage, action"},
+      {"planet": "Sun (שמש)", "color": "Gold/Yellow", "hex": "#FFD700", "quality": "Vitality, consciousness, royalty"},
+      {"planet": "Venus (נוגה)", "color": "Green", "hex": "#4CAF50", "quality": "Love, beauty, harmony"},
+      {"planet": "Mercury (כוכב)", "color": "Mixed/Multicolored", "quality": "Communication, adaptability"},
+      {"planet": "Moon (לבנה)", "color": "White/Silver", "hex": "#E0E0E0", "quality": "Emotion, intuition, cycles"}
+    ]
+  },
+
+  "colors_of_the_eye": {
+    "description": "Kabbalistic teaching on the four colors of the eye",
+    "source": "Traditional Kabbalistic teaching",
+    
+    "elements": [
+      {
+        "part": "White of the eye",
+        "letter_of_name": "Yud (י)",
+        "sefirah": "Chokmah / Chesed",
+        "patriarch": "Avraham",
+        "quality": "Wisdom, lovingkindness"
+      },
+      {
+        "part": "Red blood vessels",
+        "letter_of_name": "First Hei (ה)",
+        "sefirah": "Binah / Gevurah",
+        "patriarch": "Yitzchak",
+        "quality": "Understanding, strength, judgment"
+      },
+      {
+        "part": "Iris (individual color)",
+        "letter_of_name": "Vav (ו)",
+        "sefirah": "Da'at / Tiferet",
+        "patriarch": "Yaakov",
+        "quality": "Knowledge, beauty, truth",
+        "notes": {
+          "blue_shades": "Correspond to Chesed and Netzach (right axis)",
+          "brown_shades": "Correspond to Gevurah and Hod (left axis)", 
+          "yellow_green": "Correspond to Tiferet and Yesod (middle axis)"
+        }
+      },
+      {
+        "part": "Pupil (black)",
+        "letter_of_name": "Final Hei (ה)",
+        "sefirah": "Malkhut",
+        "quality": "Receiving, kingdom, humility",
+        "notes": "Called the 'daughter' (בת) of the eye"
+      }
+    ]
+  },
+
+  "kavvanah_prayer_colors": {
+    "description": "Which colors to visualize during which blessings of the Amidah, based on R. David ben Yehudah he-Ḥasid",
+    "source_quote": "R. David said: You shall always visualize that color of the chapter headings, since the Ḥashmal is the garment [Malbush] of the sefirah itself.",
+    
+    "blessings": [
+      {"blessing": "מגן אברהם (Shield of Abraham)", "sefirah": "Chesed", "color": "Silver/White", "hex": "#C0C0C0"},
+      {"blessing": "מחיה מתים (Revives the Dead)", "sefirah": "Gevurah", "color": "Red as fire", "hex": "#C62828"},
+      {"blessing": "האל הקדוש (The Holy God)", "sefirah": "Tiferet", "color": "White-red blend", "hex": "#FFCDD2"},
+      {"blessing": "חונן הדעת (Grants Knowledge)", "sefirah": "Tiferet/Da'at", "color": "White-red blend", "hex": "#FFCDD2"},
+      {"blessing": "הרוצה בתשובה (Desires Repentance)", "sefirah": "Binah", "color": "Green as rainbow", "hex": "#4CAF50"},
+      {"blessing": "סלח לנו (Forgive Us)", "sefirah": "Tiferet", "color": "White-red blend", "hex": "#FFCDD2"},
+      {"blessing": "גואל ישראל (Redeemer of Israel)", "sefirah": "Netzach", "color": "White tending to blue", "hex": "#E3F2FD"},
+      {"blessing": "רופא חולי (Healer of the Sick)", "sefirah": "Tiferet", "color": "White-red blend", "hex": "#FFCDD2"},
+      {"blessing": "מברך השנים (Blesses the Years)", "sefirah": "Yesod", "color": "Blue tending to black", "hex": "#3F51B5"},
+      {"blessing": "שומע תפילה (Hears Prayer)", "sefirah": "Malkhut", "color": "Black hue", "hex": "#212121"}
+    ]
+  },
+
+  "practical_applications": {
+    "when_to_wear_colors": [
+      {
+        "color": "White",
+        "hebrew": "לבן",
+        "occasions": ["Shabbat", "Yom Kippur", "Beginning something new", "Seeking purity"],
+        "sefirah": "Keter/Chesed",
+        "spiritual_benefit": "Connection to transcendence, fresh starts, spiritual elevation"
+      },
+      {
+        "color": "Blue/Techelet",
+        "hebrew": "תכלת",
+        "occasions": ["When working on speech", "Prayer", "Seeking wisdom", "Communication tasks"],
+        "sefirah": "Chokmah",
+        "spiritual_benefit": "Heavenly connection, pure communication, insight"
+      },
+      {
+        "color": "Green",
+        "hebrew": "ירוק",
+        "occasions": ["Learning", "Processing emotions", "Growth periods", "Healing"],
+        "sefirah": "Binah",
+        "spiritual_benefit": "Understanding, integration, renewal"
+      },
+      {
+        "color": "Red",
+        "hebrew": "אדום",
+        "occasions": ["When needing courage", "Setting boundaries", "Physical activity", "Confronting challenges"],
+        "sefirah": "Gevurah",
+        "spiritual_benefit": "Strength, discipline, focused power"
+      },
+      {
+        "color": "Gold/Yellow",
+        "hebrew": "זהב",
+        "occasions": ["Leadership moments", "Public speaking", "Seeking confidence", "Celebration"],
+        "sefirah": "Tiferet",
+        "spiritual_benefit": "Balanced confidence, beauty, truth"
+      },
+      {
+        "color": "Purple/Argaman",
+        "hebrew": "ארגמן",
+        "occasions": ["Royalty occasions", "Spiritual leadership", "Transformation"],
+        "sefirah": "Yesod",
+        "spiritual_benefit": "Connection, majesty, spiritual depth"
+      },
+      {
+        "color": "Black",
+        "hebrew": "שחור",
+        "occasions": ["Leadership", "Formal occasions", "Receiving mode", "Manifestation"],
+        "sefirah": "Malkhut",
+        "spiritual_benefit": "Dignity, sovereignty, grounding"
+      }
+    ],
+
+    "healing_through_color": [
+      {
+        "challenge": "Feeling contracted, fearful, unable to give",
+        "recommended_colors": ["Silver", "White", "Light blue"],
+        "sefirah_to_strengthen": "Chesed"
+      },
+      {
+        "challenge": "Too scattered, lacking self-discipline",
+        "recommended_colors": ["Red", "Deep burgundy"],
+        "sefirah_to_strengthen": "Gevurah"
+      },
+      {
+        "challenge": "Inner conflict, lack of self-compassion",
+        "recommended_colors": ["Pink", "Rose", "Gold"],
+        "sefirah_to_strengthen": "Tiferet"
+      },
+      {
+        "challenge": "Giving up easily, lacking motivation",
+        "recommended_colors": ["Light blue-white", "Lavender"],
+        "sefirah_to_strengthen": "Netzach"
+      },
+      {
+        "challenge": "Arrogance, disconnection from gratitude",
+        "recommended_colors": ["Warm green", "Coral", "Peach"],
+        "sefirah_to_strengthen": "Hod"
+      },
+      {
+        "challenge": "Feeling ungrounded, disconnected",
+        "recommended_colors": ["Deep blue", "Indigo"],
+        "sefirah_to_strengthen": "Yesod"
+      },
+      {
+        "challenge": "Unable to receive, feeling unworthy",
+        "recommended_colors": ["Black", "Navy", "Deep earth tones"],
+        "sefirah_to_strengthen": "Malkhut"
+      }
+    ]
+  },
+
+  "key_quotes": {
+    "visualization_practice": {
+      "source": "R. Tanḥum, as recorded by Moshe Idel",
+      "hebrew": "תצייר במחשבתך אותיות יהוה לפני עיניך בגלגל בצבע אדום כאש ומחשבתך פועלת הרבה",
+      "english": "You shall visualize in your thought the letters of the Tetragrammaton before your eyes, in a circle with a color red as fire, and your thought is performing many things."
+    },
+    "garment_of_sefirah": {
+      "source": "R. David ben Yehudah he-Ḥasid",
+      "teaching": "The Ḥashmal (radiance) is the garment (Malbush) of the sefirah itself, surrounding it."
+    },
+    "oral_transmission": {
+      "hebrew": "כל אלו הרמזים צריכין קבלה מפה אל פה",
+      "english": "All these hints must be transmitted from mouth to mouth"
+    }
+  }
+}
