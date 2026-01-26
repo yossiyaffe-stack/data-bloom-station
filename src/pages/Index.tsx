@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle, Crown, Grid3X3, User, Eye, SwatchBook, History } from "lucide-react";
+import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle, Crown, Grid3X3, User, Eye, SwatchBook, History, AlertTriangle, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 
 interface StatCardProps {
   title: string;
@@ -41,6 +42,80 @@ const StatCardSkeleton = () => (
     </CardContent>
   </Card>
 );
+
+interface CompletionItemProps {
+  title: string;
+  current: number;
+  total: number;
+  priority: 'critical' | 'high' | 'medium' | 'low' | 'complete';
+  description: string;
+}
+
+const CompletionItem = ({ title, current, total, priority, description }: CompletionItemProps) => {
+  const percentage = Math.round((current / total) * 100);
+  
+  const priorityConfig = {
+    critical: { 
+      icon: <XCircle className="h-5 w-5 text-red-600" />, 
+      badge: "bg-red-100 text-red-800 border-red-200",
+      progressColor: "bg-red-500",
+      label: "Critical"
+    },
+    high: { 
+      icon: <AlertTriangle className="h-5 w-5 text-orange-600" />, 
+      badge: "bg-orange-100 text-orange-800 border-orange-200",
+      progressColor: "bg-orange-500",
+      label: "High Priority"
+    },
+    medium: { 
+      icon: <AlertCircle className="h-5 w-5 text-yellow-600" />, 
+      badge: "bg-yellow-100 text-yellow-800 border-yellow-200",
+      progressColor: "bg-yellow-500",
+      label: "Medium"
+    },
+    low: { 
+      icon: <AlertCircle className="h-5 w-5 text-blue-600" />, 
+      badge: "bg-blue-100 text-blue-800 border-blue-200",
+      progressColor: "bg-blue-500",
+      label: "Low"
+    },
+    complete: { 
+      icon: <CheckCircle2 className="h-5 w-5 text-green-600" />, 
+      badge: "bg-green-100 text-green-800 border-green-200",
+      progressColor: "bg-green-500",
+      label: "Complete"
+    },
+  };
+
+  const config = priorityConfig[priority];
+
+  return (
+    <div className="p-4 rounded-lg border bg-card">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center gap-2">
+          {config.icon}
+          <h4 className="font-semibold">{title}</h4>
+        </div>
+        <span className={`text-xs px-2 py-1 rounded-full border ${config.badge}`}>
+          {config.label}
+        </span>
+      </div>
+      <p className="text-sm text-muted-foreground mb-3">{description}</p>
+      <div className="space-y-1">
+        <div className="flex justify-between text-sm">
+          <span>{current} / {total} subtypes</span>
+          <span className="font-medium">{percentage}%</span>
+        </div>
+        <div className="h-2 bg-muted rounded-full overflow-hidden">
+          <div 
+            className={`h-full ${config.progressColor} transition-all duration-500`}
+            style={{ width: `${percentage}%` }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Index = () => {
   const { data: seasons } = useQuery({
@@ -232,7 +307,72 @@ const Index = () => {
     },
   });
 
+  // Junction table coverage queries
+  const { data: subtypeArtistsCoverage } = useQuery({
+    queryKey: ["subtype_artists_coverage"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_artists").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: subtypeGemstonesCoverage } = useQuery({
+    queryKey: ["subtype_gemstones_coverage"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_gemstones").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: subtypeFabricsCoverage } = useQuery({
+    queryKey: ["subtype_fabrics_coverage"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_fabrics").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: subtypeDesignersCoverage } = useQuery({
+    queryKey: ["subtype_designers_coverage"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_designers").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: subtypeMetalsCoverage } = useQuery({
+    queryKey: ["subtype_metals_coverage"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_metals").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: subtypeErasCoverage } = useQuery({
+    queryKey: ["subtype_eras_coverage"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_eras").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: makeupCoverage } = useQuery({
+    queryKey: ["makeup_coverage"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("makeup_recommendations").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
   const isLoading = !seasons;
+  const totalSubtypes = subtypes?.length || 40;
 
   const stats = [
     { 
@@ -406,6 +546,86 @@ const Index = () => {
             </p>
           )}
         </div>
+
+        {/* Attention Needed Section */}
+        <Card className="mb-8 border-2 border-orange-200 dark:border-orange-900">
+          <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30">
+            <CardTitle className="flex items-center gap-2 text-orange-800 dark:text-orange-200">
+              <AlertTriangle className="h-5 w-5" />
+              Data Completion Status
+            </CardTitle>
+            <CardDescription>
+              Junction table mappings - linking subtypes to their recommended elements
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <CompletionItem
+                title="Makeup Recommendations"
+                current={makeupCoverage || 0}
+                total={totalSubtypes}
+                priority={((makeupCoverage || 0) / totalSubtypes) < 0.3 ? 'critical' : ((makeupCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : 'medium'}
+                description="Lip, blush, eyeshadow, and nail recommendations per subtype"
+              />
+              <CompletionItem
+                title="Fabric Mappings"
+                current={subtypeFabricsCoverage || 0}
+                total={totalSubtypes}
+                priority={((subtypeFabricsCoverage || 0) / totalSubtypes) < 0.3 ? 'critical' : ((subtypeFabricsCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : 'medium'}
+                description="Recommended fabrics (silk, cotton, velvet, etc.) per subtype"
+              />
+              <CompletionItem
+                title="Historical Era Links"
+                current={subtypeErasCoverage || 0}
+                total={totalSubtypes}
+                priority={((subtypeErasCoverage || 0) / totalSubtypes) < 0.3 ? 'critical' : ((subtypeErasCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : 'medium'}
+                description="Fashion era references (Victorian, Art Deco, etc.) per subtype"
+              />
+              <CompletionItem
+                title="Designer Associations"
+                current={subtypeDesignersCoverage || 0}
+                total={totalSubtypes}
+                priority={((subtypeDesignersCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : 'medium'}
+                description="Designer recommendations (Chanel, Dior, etc.) per subtype"
+              />
+              <CompletionItem
+                title="Gemstone Mappings"
+                current={subtypeGemstonesCoverage || 0}
+                total={totalSubtypes}
+                priority={((subtypeGemstonesCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : ((subtypeGemstonesCoverage || 0) / totalSubtypes) < 0.75 ? 'medium' : 'low'}
+                description="Recommended gemstones per subtype"
+              />
+              <CompletionItem
+                title="Artist Inspirations"
+                current={subtypeArtistsCoverage || 0}
+                total={totalSubtypes}
+                priority={((subtypeArtistsCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : ((subtypeArtistsCoverage || 0) / totalSubtypes) < 0.75 ? 'medium' : 'low'}
+                description="Master artist references per subtype"
+              />
+              <CompletionItem
+                title="Metal Recommendations"
+                current={subtypeMetalsCoverage || 0}
+                total={totalSubtypes}
+                priority={((subtypeMetalsCoverage || 0) / totalSubtypes) >= 0.85 ? 'complete' : 'low'}
+                description="Gold, silver, rose gold recommendations per subtype"
+              />
+            </div>
+
+            {/* Data Quality Notes */}
+            <div className="mt-6 p-4 rounded-lg bg-muted/50 border">
+              <h4 className="font-semibold mb-2 flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                Data Quality Notes
+              </h4>
+              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                <li>Algorithm files provide detailed data for ~25 subtypes; remaining 15 have minimal metadata</li>
+                <li>Some artist/designer names in algorithm don't match database entries (naming variations)</li>
+                <li>Makeup recommendations need lips, blush, eyeshadow, and nails for each subtype</li>
+                <li>Fabric mappings should include rating (perfect, good, avoid) and notes</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* App Data Stats */}
         <div className="mb-8">
