@@ -4,17 +4,25 @@ export type ModalKey =
   | "seasons" | "subtypes" | "colors" | "fabrics" | "gemstones" 
   | "artists" | "eras" | "paintings" | "sephirot" | "makeup" 
   | "metals" | "designers" | "prints" | "bodyTypes"
-  | "completionStatus" | "junctionMappings";
+  | "completionStatus" | "junctionMappings"
+  | "seasonDetail";
 
 export function useModalState() {
   const [openModal, setOpenModal] = useState<ModalKey | null>(null);
+  const [selectedSeasonId, setSelectedSeasonId] = useState<string | null>(null);
 
   const openModalHandler = useCallback((key: ModalKey) => {
     setOpenModal(key);
   }, []);
 
+  const openSeasonDetail = useCallback((seasonId: string) => {
+    setSelectedSeasonId(seasonId);
+    setOpenModal("seasonDetail");
+  }, []);
+
   const closeModal = useCallback(() => {
     setOpenModal(null);
+    setSelectedSeasonId(null);
   }, []);
 
   const isOpen = useCallback((key: ModalKey) => openModal === key, [openModal]);
@@ -22,7 +30,10 @@ export function useModalState() {
   const getOpenChange = useCallback(
     (key: ModalKey) => (open: boolean) => {
       if (open) setOpenModal(key);
-      else if (openModal === key) setOpenModal(null);
+      else if (openModal === key) {
+        setOpenModal(null);
+        if (key === "seasonDetail") setSelectedSeasonId(null);
+      }
     },
     [openModal]
   );
@@ -57,6 +68,8 @@ export function useModalState() {
   return {
     openModal,
     openModalHandler,
+    openSeasonDetail,
+    selectedSeasonId,
     closeModal,
     isOpen,
     getOpenChange,

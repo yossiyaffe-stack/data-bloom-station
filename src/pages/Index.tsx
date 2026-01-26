@@ -11,7 +11,7 @@ import {
   SeasonsModal, SubtypesModal, ColorsModal, FabricsModal, GemstonesModal,
   ArtistsModal, ErasModal, PaintingsModal, SephirotModal, MakeupModal,
   MetalsModal, DesignersModal, PrintsModal, BodyTypesModal,
-  CompletionStatusModal, JunctionMappingsModal
+  CompletionStatusModal, JunctionMappingsModal, SeasonDetailModal
 } from "@/components/dashboard/DataModals";
 
 const Collapsible = CollapsiblePrimitive.Root;
@@ -146,7 +146,7 @@ const CompletionItem = ({ title, current, total, priority, description }: Comple
 };
 
 const Index = () => {
-  const { isOpen, getOpenChange, getClickHandler, openModalHandler } = useModalState();
+  const { isOpen, getOpenChange, getClickHandler, openModalHandler, openSeasonDetail, selectedSeasonId } = useModalState();
 
   const { data: seasons } = useQuery({
     queryKey: ["seasons"],
@@ -575,6 +575,7 @@ const Index = () => {
         <BodyTypesModal open={isOpen("bodyTypes")} onOpenChange={getOpenChange("bodyTypes")} />
         <CompletionStatusModal open={isOpen("completionStatus")} onOpenChange={getOpenChange("completionStatus")} />
         <JunctionMappingsModal open={isOpen("junctionMappings")} onOpenChange={getOpenChange("junctionMappings")} />
+        <SeasonDetailModal open={isOpen("seasonDetail")} onOpenChange={getOpenChange("seasonDetail")} seasonId={selectedSeasonId} />
 
         {/* Header */}
         <div className="text-center mb-12">
@@ -737,7 +738,11 @@ const Index = () => {
                 {seasons.map((season) => (
                   <div 
                     key={season.id} 
-                    className="p-4 rounded-lg border bg-card hover:shadow-md transition-shadow"
+                    className="p-4 rounded-lg border bg-card hover:shadow-md transition-shadow cursor-pointer hover:border-primary/30"
+                    onClick={() => openSeasonDetail(season.id)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openSeasonDetail(season.id); } }}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold">{season.name}</h3>
