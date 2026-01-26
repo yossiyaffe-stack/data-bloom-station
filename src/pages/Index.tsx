@@ -702,18 +702,74 @@ const Index = () => {
                 <TabsTrigger value="write">Write (POST/PUT)</TabsTrigger>
               </TabsList>
               <TabsContent value="read" className="space-y-4 mt-4">
-                <div className="p-4 rounded-lg bg-muted/50 font-mono text-sm">
-                  <div className="text-muted-foreground mb-1">Complete Methodology</div>
-                  <code>GET /functions/v1/methodology</code>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {/* Core Endpoints */}
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Complete Methodology</div>
+                    <code className="text-xs">GET /methodology</code>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Seasons with Subtypes</div>
+                    <code className="text-xs">GET /seasons?undertone=warm</code>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Subtype Details</div>
+                    <code className="text-xs">GET /subtype?slug=wildflower-spring</code>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Colors by Category</div>
+                    <code className="text-xs">GET /colors?category=skin_tone</code>
+                  </div>
+                  
+                  {/* Reference Data */}
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Artists</div>
+                    <code className="text-xs">GET /artists?slug=monet</code>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Designers</div>
+                    <code className="text-xs">GET /designers?price_tier=luxury</code>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Fabrics</div>
+                    <code className="text-xs">GET /fabrics?category=natural</code>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Gemstones</div>
+                    <code className="text-xs">GET /gemstones?season=spring</code>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Metals</div>
+                    <code className="text-xs">GET /metals?warmth=warm</code>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Historical Eras</div>
+                    <code className="text-xs">GET /eras?slug=art-deco</code>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Prints</div>
+                    <code className="text-xs">GET /prints?category=floral</code>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Makeup Recommendations</div>
+                    <code className="text-xs">GET /makeup?subtype_slug=french-spring</code>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Body Types</div>
+                    <code className="text-xs">GET /body-types?system=kibbe</code>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Masterpiece Paintings</div>
+                    <code className="text-xs">GET /paintings?season=autumn</code>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Sephirot Colors</div>
+                    <code className="text-xs">GET /sephirot</code>
+                  </div>
                 </div>
-                <div className="p-4 rounded-lg bg-muted/50 font-mono text-sm">
-                  <div className="text-muted-foreground mb-1">Get Subtype by Slug</div>
-                  <code>GET /functions/v1/subtype?slug=wildflower-spring</code>
-                </div>
-                <div className="p-4 rounded-lg bg-muted/50 font-mono text-sm">
-                  <div className="text-muted-foreground mb-1">Get Colors by Category</div>
-                  <code>GET /functions/v1/colors?category=skin_tone</code>
-                </div>
+                <p className="text-xs text-muted-foreground mt-3">
+                  Base URL: <code className="bg-muted px-1 rounded">https://ipcjabzvinmzyujsfige.supabase.co/functions/v1</code>
+                </p>
               </TabsContent>
               <TabsContent value="write" className="space-y-4 mt-4">
                 <div className="p-4 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 font-mono text-sm border-l-4 border-indigo-500">
