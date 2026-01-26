@@ -3,7 +3,8 @@ import { useState, useCallback, useMemo } from "react";
 export type ModalKey = 
   | "seasons" | "subtypes" | "colors" | "fabrics" | "gemstones" 
   | "artists" | "eras" | "paintings" | "sephirot" | "makeup" 
-  | "metals" | "designers" | "prints" | "bodyTypes";
+  | "metals" | "designers" | "prints" | "bodyTypes"
+  | "completionStatus" | "junctionMappings";
 
 export function useModalState() {
   const [openModal, setOpenModal] = useState<ModalKey | null>(null);
