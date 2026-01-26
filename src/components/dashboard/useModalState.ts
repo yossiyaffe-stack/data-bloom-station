@@ -5,7 +5,9 @@ export type ModalKey =
   | "artists" | "eras" | "paintings" | "sephirot" | "makeup" 
   | "metals" | "designers" | "prints" | "bodyTypes"
   | "completionStatus" | "junctionMappings"
-  | "seasonDetail";
+  | "seasonDetail"
+  | "makeupMappings" | "fabricMappings" | "eraMappings" 
+  | "designerMappings" | "gemstoneMappings" | "artistMappings" | "metalMappings";
 
 export function useModalState() {
   const [openModal, setOpenModal] = useState<ModalKey | null>(null);

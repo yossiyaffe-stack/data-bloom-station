@@ -1000,6 +1000,520 @@ export const JunctionMappingsModal = ({ open, onOpenChange }: ModalProps) => {
   );
 };
 
+// Makeup Mappings Modal - shows which subtypes have makeup recommendations
+export const MakeupMappingsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["makeup-mappings-detail"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("subtypes")
+        .select("id, name, slug, seasons(name)")
+        .order("name");
+      if (error) throw error;
+
+      const { data: makeupData } = await supabase
+        .from("makeup_recommendations")
+        .select("subtype_id, category");
+      
+      const makeupBySubtype = (makeupData || []).reduce((acc: Record<string, string[]>, rec) => {
+        if (rec.subtype_id) {
+          if (!acc[rec.subtype_id]) acc[rec.subtype_id] = [];
+          if (!acc[rec.subtype_id].includes(rec.category)) acc[rec.subtype_id].push(rec.category);
+        }
+        return acc;
+      }, {});
+
+      return data?.map(s => ({
+        ...s,
+        categories: makeupBySubtype[s.id] || [],
+        hasMakeup: !!makeupBySubtype[s.id]?.length
+      }));
+    },
+  });
+
+  const covered = data?.filter(s => s.hasMakeup).length || 0;
+  const total = data?.length || 0;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Makeup Recommendations by Subtype</DialogTitle>
+          <DialogDescription>
+            {covered} of {total} subtypes have makeup recommendations
+          </DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : (
+            <ul className="divide-y">
+              {data?.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-medium flex items-center gap-2">
+                        {item.name}
+                        {!item.hasMakeup && <Badge variant="destructive" className="text-[10px]">Missing</Badge>}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {item.seasons && <Badge variant="outline" className="mr-1">{(item.seasons as { name: string }).name}</Badge>}
+                        {item.hasMakeup && item.categories.map(c => (
+                          <Badge key={c} variant="secondary" className="mr-1 text-[10px]">{c}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Fabric Mappings Modal
+export const FabricMappingsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["fabric-mappings-detail"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("subtypes")
+        .select("id, name, slug, seasons(name)")
+        .order("name");
+      if (error) throw error;
+
+      const { data: fabricData } = await supabase
+        .from("subtype_fabrics")
+        .select("subtype_id, fabrics(name), rating");
+      
+      const fabricsBySubtype = (fabricData || []).reduce((acc: Record<string, { name: string; rating: string }[]>, rec) => {
+        if (rec.subtype_id && rec.fabrics) {
+          if (!acc[rec.subtype_id]) acc[rec.subtype_id] = [];
+          acc[rec.subtype_id].push({ name: (rec.fabrics as { name: string }).name, rating: rec.rating });
+        }
+        return acc;
+      }, {});
+
+      return data?.map(s => ({
+        ...s,
+        fabrics: fabricsBySubtype[s.id] || [],
+        hasFabrics: !!fabricsBySubtype[s.id]?.length
+      }));
+    },
+  });
+
+  const covered = data?.filter(s => s.hasFabrics).length || 0;
+  const total = data?.length || 0;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Fabric Mappings by Subtype</DialogTitle>
+          <DialogDescription>
+            {covered} of {total} subtypes have fabric recommendations
+          </DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : (
+            <ul className="divide-y">
+              {data?.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-medium flex items-center gap-2">
+                        {item.name}
+                        {!item.hasFabrics && <Badge variant="destructive" className="text-[10px]">Missing</Badge>}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {item.seasons && <Badge variant="outline" className="mr-1">{(item.seasons as { name: string }).name}</Badge>}
+                        {item.hasFabrics && <span className="text-muted-foreground">{item.fabrics.length} fabrics</span>}
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Era Mappings Modal
+export const EraMappingsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["era-mappings-detail"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("subtypes")
+        .select("id, name, slug, seasons(name)")
+        .order("name");
+      if (error) throw error;
+
+      const { data: eraData } = await supabase
+        .from("subtype_eras")
+        .select("subtype_id, historical_eras(name)");
+      
+      const erasBySubtype = (eraData || []).reduce((acc: Record<string, string[]>, rec) => {
+        if (rec.subtype_id && rec.historical_eras) {
+          if (!acc[rec.subtype_id]) acc[rec.subtype_id] = [];
+          acc[rec.subtype_id].push((rec.historical_eras as { name: string }).name);
+        }
+        return acc;
+      }, {});
+
+      return data?.map(s => ({
+        ...s,
+        eras: erasBySubtype[s.id] || [],
+        hasEras: !!erasBySubtype[s.id]?.length
+      }));
+    },
+  });
+
+  const covered = data?.filter(s => s.hasEras).length || 0;
+  const total = data?.length || 0;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Historical Era Links by Subtype</DialogTitle>
+          <DialogDescription>
+            {covered} of {total} subtypes have era references
+          </DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : (
+            <ul className="divide-y">
+              {data?.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-medium flex items-center gap-2">
+                        {item.name}
+                        {!item.hasEras && <Badge variant="destructive" className="text-[10px]">Missing</Badge>}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {item.seasons && <Badge variant="outline" className="mr-1">{(item.seasons as { name: string }).name}</Badge>}
+                        {item.hasEras && item.eras.map(e => (
+                          <Badge key={e} variant="secondary" className="mr-1 text-[10px]">{e}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Designer Mappings Modal
+export const DesignerMappingsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["designer-mappings-detail"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("subtypes")
+        .select("id, name, slug, seasons(name)")
+        .order("name");
+      if (error) throw error;
+
+      const { data: designerData } = await supabase
+        .from("subtype_designers")
+        .select("subtype_id, designers(name)");
+      
+      const designersBySubtype = (designerData || []).reduce((acc: Record<string, string[]>, rec) => {
+        if (rec.subtype_id && rec.designers) {
+          if (!acc[rec.subtype_id]) acc[rec.subtype_id] = [];
+          acc[rec.subtype_id].push((rec.designers as { name: string }).name);
+        }
+        return acc;
+      }, {});
+
+      return data?.map(s => ({
+        ...s,
+        designers: designersBySubtype[s.id] || [],
+        hasDesigners: !!designersBySubtype[s.id]?.length
+      }));
+    },
+  });
+
+  const covered = data?.filter(s => s.hasDesigners).length || 0;
+  const total = data?.length || 0;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Designer Associations by Subtype</DialogTitle>
+          <DialogDescription>
+            {covered} of {total} subtypes have designer recommendations
+          </DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : (
+            <ul className="divide-y">
+              {data?.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-medium flex items-center gap-2">
+                        {item.name}
+                        {!item.hasDesigners && <Badge variant="destructive" className="text-[10px]">Missing</Badge>}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {item.seasons && <Badge variant="outline" className="mr-1">{(item.seasons as { name: string }).name}</Badge>}
+                        {item.hasDesigners && <span className="text-muted-foreground">{item.designers.slice(0, 3).join(", ")}{item.designers.length > 3 && ` +${item.designers.length - 3}`}</span>}
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Gemstone Mappings Modal
+export const GemstoneMappingsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["gemstone-mappings-detail"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("subtypes")
+        .select("id, name, slug, seasons(name)")
+        .order("name");
+      if (error) throw error;
+
+      const { data: gemstoneData } = await supabase
+        .from("subtype_gemstones")
+        .select("subtype_id, gemstones(name, color_hex), rating");
+      
+      const gemstonesBySubtype = (gemstoneData || []).reduce((acc: Record<string, { name: string; hex: string | null }[]>, rec) => {
+        if (rec.subtype_id && rec.gemstones) {
+          if (!acc[rec.subtype_id]) acc[rec.subtype_id] = [];
+          const gem = rec.gemstones as { name: string; color_hex: string | null };
+          acc[rec.subtype_id].push({ name: gem.name, hex: gem.color_hex });
+        }
+        return acc;
+      }, {});
+
+      return data?.map(s => ({
+        ...s,
+        gemstones: gemstonesBySubtype[s.id] || [],
+        hasGemstones: !!gemstonesBySubtype[s.id]?.length
+      }));
+    },
+  });
+
+  const covered = data?.filter(s => s.hasGemstones).length || 0;
+  const total = data?.length || 0;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Gemstone Mappings by Subtype</DialogTitle>
+          <DialogDescription>
+            {covered} of {total} subtypes have gemstone recommendations
+          </DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : (
+            <ul className="divide-y">
+              {data?.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <div className="font-medium flex items-center gap-2">
+                        {item.name}
+                        {!item.hasGemstones && <Badge variant="destructive" className="text-[10px]">Missing</Badge>}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1 flex items-center flex-wrap gap-1">
+                        {item.seasons && <Badge variant="outline" className="mr-1">{(item.seasons as { name: string }).name}</Badge>}
+                        {item.hasGemstones && item.gemstones.slice(0, 4).map(g => (
+                          <span key={g.name} className="inline-flex items-center gap-1">
+                            {g.hex && <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: g.hex }} />}
+                            <span>{g.name}</span>
+                          </span>
+                        ))}
+                        {item.gemstones.length > 4 && <span className="text-muted-foreground">+{item.gemstones.length - 4}</span>}
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Artist Mappings Modal
+export const ArtistMappingsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["artist-mappings-detail"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("subtypes")
+        .select("id, name, slug, seasons(name)")
+        .order("name");
+      if (error) throw error;
+
+      const { data: artistData } = await supabase
+        .from("subtype_artists")
+        .select("subtype_id, artists(name)");
+      
+      const artistsBySubtype = (artistData || []).reduce((acc: Record<string, string[]>, rec) => {
+        if (rec.subtype_id && rec.artists) {
+          if (!acc[rec.subtype_id]) acc[rec.subtype_id] = [];
+          acc[rec.subtype_id].push((rec.artists as { name: string }).name);
+        }
+        return acc;
+      }, {});
+
+      return data?.map(s => ({
+        ...s,
+        artists: artistsBySubtype[s.id] || [],
+        hasArtists: !!artistsBySubtype[s.id]?.length
+      }));
+    },
+  });
+
+  const covered = data?.filter(s => s.hasArtists).length || 0;
+  const total = data?.length || 0;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Artist Inspirations by Subtype</DialogTitle>
+          <DialogDescription>
+            {covered} of {total} subtypes have artist references
+          </DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : (
+            <ul className="divide-y">
+              {data?.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-medium flex items-center gap-2">
+                        {item.name}
+                        {!item.hasArtists && <Badge variant="destructive" className="text-[10px]">Missing</Badge>}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {item.seasons && <Badge variant="outline" className="mr-1">{(item.seasons as { name: string }).name}</Badge>}
+                        {item.hasArtists && <span className="text-muted-foreground">{item.artists.slice(0, 3).join(", ")}{item.artists.length > 3 && ` +${item.artists.length - 3}`}</span>}
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Metal Mappings Modal
+export const MetalMappingsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["metal-mappings-detail"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("subtypes")
+        .select("id, name, slug, seasons(name)")
+        .order("name");
+      if (error) throw error;
+
+      const { data: metalData } = await supabase
+        .from("subtype_metals")
+        .select("subtype_id, metals(name, color_hex), rating");
+      
+      const metalsBySubtype = (metalData || []).reduce((acc: Record<string, { name: string; hex: string | null; rating: string }[]>, rec) => {
+        if (rec.subtype_id && rec.metals) {
+          if (!acc[rec.subtype_id]) acc[rec.subtype_id] = [];
+          const metal = rec.metals as { name: string; color_hex: string | null };
+          acc[rec.subtype_id].push({ name: metal.name, hex: metal.color_hex, rating: rec.rating });
+        }
+        return acc;
+      }, {});
+
+      return data?.map(s => ({
+        ...s,
+        metals: metalsBySubtype[s.id] || [],
+        hasMetals: !!metalsBySubtype[s.id]?.length
+      }));
+    },
+  });
+
+  const covered = data?.filter(s => s.hasMetals).length || 0;
+  const total = data?.length || 0;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Metal Recommendations by Subtype</DialogTitle>
+          <DialogDescription>
+            {covered} of {total} subtypes have metal recommendations
+          </DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : (
+            <ul className="divide-y">
+              {data?.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <div className="font-medium flex items-center gap-2">
+                        {item.name}
+                        {!item.hasMetals && <Badge variant="destructive" className="text-[10px]">Missing</Badge>}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1 flex items-center flex-wrap gap-1">
+                        {item.seasons && <Badge variant="outline" className="mr-1">{(item.seasons as { name: string }).name}</Badge>}
+                        {item.hasMetals && item.metals.map(m => (
+                          <span key={m.name} className="inline-flex items-center gap-1">
+                            {m.hex && <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: m.hex }} />}
+                            <span>{m.name}</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 // Helper components
 const LoadingSkeleton = () => (
   <div className="p-4 space-y-2">
