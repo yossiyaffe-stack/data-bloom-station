@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import * as CollapsiblePrimitive from "@radix-ui/react-collapsible";
 
 const Collapsible = CollapsiblePrimitive.Root;
@@ -18,22 +19,40 @@ interface StatCardProps {
   description: string;
   icon: React.ReactNode;
   color: string;
+  onClick?: () => void;
 }
 
-const StatCard = ({ title, count, description, icon, color }: StatCardProps) => (
-  <Card className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
-    <CardHeader className="flex flex-row items-center justify-between pb-2">
-      <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-      <div className={`p-2 rounded-lg ${color}`}>
-        {icon}
-      </div>
-    </CardHeader>
-    <CardContent>
-      <div className="text-3xl font-bold">{count}</div>
-      <p className="text-xs text-muted-foreground mt-1">{description}</p>
-    </CardContent>
-  </Card>
-);
+const StatCard = ({ title, count, description, icon, color, onClick }: StatCardProps) => {
+  const interactive = typeof onClick === "function";
+
+  return (
+    <Card
+      className={
+        "group transition-all duration-300 border-2 hover:border-primary/20" +
+        (interactive ? " cursor-pointer hover:shadow-lg" : "")
+      }
+      onClick={onClick}
+      role={interactive ? "button" : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (!interactive) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
+    >
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+        <div className={`p-2 rounded-lg ${color}`}>{icon}</div>
+      </CardHeader>
+      <CardContent>
+        <div className="text-3xl font-bold">{count}</div>
+        <p className="text-xs text-muted-foreground mt-1">{description}</p>
+      </CardContent>
+    </Card>
+  );
+};
 
 const StatCardSkeleton = () => (
   <Card>
@@ -123,6 +142,8 @@ const CompletionItem = ({ title, current, total, priority, description }: Comple
 };
 
 const Index = () => {
+  const [artistsOpen, setArtistsOpen] = useState(false);
+
   const { data: seasons } = useQuery({
     queryKey: ["seasons"],
     queryFn: async () => {
@@ -172,6 +193,23 @@ const Index = () => {
     queryKey: ["artists"],
     queryFn: async () => {
       const { data, error } = await supabase.from("artists").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const {
+    data: artistsList,
+    isLoading: artistsListLoading,
+    error: artistsListError,
+  } = useQuery({
+    queryKey: ["artists", "list"],
+    enabled: artistsOpen,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("artists")
+        .select("id, name, slug, era, style, wikipedia_url")
+        .order("name");
       if (error) throw error;
       return data;
     },
@@ -532,6 +570,60 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
       <div className="container mx-auto px-4 py-12">
+        <Dialog open={artistsOpen} onOpenChange={setArtistsOpen}>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle>Artists</DialogTitle>
+              <DialogDescription>All artists currently in the database.</DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[60vh] overflow-auto rounded-md border">
+              {artistsListLoading ? (
+                <div className="p-4 space-y-2">
+                  <Skeleton className="h-5 w-48" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6" />
+                </div>
+              ) : artistsListError ? (
+                <div className="p-4 text-sm text-muted-foreground">Couldn’t load artists right now.</div>
+              ) : (artistsList?.length ?? 0) === 0 ? (
+                <div className="p-4 text-sm text-muted-foreground">No artists found.</div>
+              ) : (
+                <ul className="divide-y">
+                  {artistsList!.map((a) => (
+                    <li key={a.id} className="p-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="font-medium truncate">{a.name}</div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            <span className="font-mono">{a.slug}</span>
+                            {(a.era || a.style) && (
+                              <>
+                                {" "}• {a.era || ""}
+                                {a.era && a.style ? " — " : ""}
+                                {a.style || ""}
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        {a.wikipedia_url ? (
+                          <a
+                            className="text-xs underline text-muted-foreground whitespace-nowrap"
+                            href={a.wikipedia_url}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Wikipedia
+                          </a>
+                        ) : null}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
@@ -655,7 +747,13 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {isLoading
               ? Array(8).fill(0).map((_, i) => <StatCardSkeleton key={i} />)
-              : stats.map((stat) => <StatCard key={stat.title} {...stat} />)
+              : stats.map((stat) => (
+                  <StatCard
+                    key={stat.title}
+                    {...stat}
+                    onClick={stat.title === "Artists" ? () => setArtistsOpen(true) : undefined}
+                  />
+                ))
             }
           </div>
         </div>
