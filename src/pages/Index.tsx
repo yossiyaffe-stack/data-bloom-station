@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle, Crown, Grid3X3, User, Eye, SwatchBook, History, AlertTriangle, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle, Crown, Grid3X3, User, Eye, SwatchBook, History, AlertTriangle, CheckCircle2, XCircle, AlertCircle, ChevronDown } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 interface StatCardProps {
   title: string;
   count: number;
@@ -701,72 +701,247 @@ const Index = () => {
                 <TabsTrigger value="read">Read (GET)</TabsTrigger>
                 <TabsTrigger value="write">Write (POST/PUT)</TabsTrigger>
               </TabsList>
-              <TabsContent value="read" className="space-y-4 mt-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {/* Core Endpoints */}
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Complete Methodology</div>
-                    <code className="text-xs">GET /methodology</code>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Seasons with Subtypes</div>
-                    <code className="text-xs">GET /seasons?undertone=warm</code>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Subtype Details</div>
-                    <code className="text-xs">GET /subtype?slug=wildflower-spring</code>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Colors by Category</div>
-                    <code className="text-xs">GET /colors?category=skin_tone</code>
-                  </div>
-                  
-                  {/* Reference Data */}
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Artists</div>
-                    <code className="text-xs">GET /artists?slug=monet</code>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Designers</div>
-                    <code className="text-xs">GET /designers?price_tier=luxury</code>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Fabrics</div>
-                    <code className="text-xs">GET /fabrics?category=natural</code>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Gemstones</div>
-                    <code className="text-xs">GET /gemstones?season=spring</code>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Metals</div>
-                    <code className="text-xs">GET /metals?warmth=warm</code>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Historical Eras</div>
-                    <code className="text-xs">GET /eras?slug=art-deco</code>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Prints</div>
-                    <code className="text-xs">GET /prints?category=floral</code>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Makeup Recommendations</div>
-                    <code className="text-xs">GET /makeup?subtype_slug=french-spring</code>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Body Types</div>
-                    <code className="text-xs">GET /body-types?system=kibbe</code>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Masterpiece Paintings</div>
-                    <code className="text-xs">GET /paintings?season=autumn</code>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 font-mono text-sm">
-                    <div className="text-muted-foreground text-xs mb-1">Sephirot Colors</div>
-                    <code className="text-xs">GET /sephirot</code>
-                  </div>
-                </div>
+              <TabsContent value="read" className="space-y-3 mt-4">
+                {/* Core Endpoints */}
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Complete Methodology</div>
+                      <code className="text-xs font-mono">GET /methodology</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 [&[data-state=open]>svg]:rotate-180" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Returns complete methodology with all seasons, subtypes, and their relationships.</p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: { seasons: [...], subtypes: [...], colors: [...] }`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Seasons with Subtypes</div>
+                      <code className="text-xs font-mono">GET /seasons?undertone=warm</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Filters: <code>?undertone=warm|cool</code> or no params for all.</p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: [{ id, name, undertone, subtypes: [...] }]`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Subtype Details</div>
+                      <code className="text-xs font-mono">GET /subtype?slug=wildflower-spring</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Returns full subtype with colors, fabrics, artists, designers, metals, etc.</p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: { id, name, slug, season, colors: [...], fabrics: [...], ... }`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Colors by Category</div>
+                      <code className="text-xs font-mono">GET /colors?category=skin_tone</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Filters: <code>?category=</code>, <code>?warmth=</code>, <code>?season=</code></p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: [{ id, name, hex, hsl_h, hsl_s, hsl_l, warmth, category }]`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Artists</div>
+                      <code className="text-xs font-mono">GET /artists?slug=monet</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Filters: <code>?slug=</code>, <code>?era=</code>, <code>?subtype_id=</code></p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: [{ id, name, slug, era, style, notable_works, seasons_affinity }]`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Designers</div>
+                      <code className="text-xs font-mono">GET /designers?price_tier=luxury</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Filters: <code>?slug=</code>, <code>?price_tier=</code>, <code>?subtype_id=</code></p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: [{ id, name, slug, brand_style, price_tier, signature_elements }]`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Fabrics</div>
+                      <code className="text-xs font-mono">GET /fabrics?category=natural</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Filters: <code>?category=</code>, <code>?formality_level=</code>, <code>?subtype_id=</code></p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: [{ id, name, slug, category, characteristics, formality_level }]`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Gemstones</div>
+                      <code className="text-xs font-mono">GET /gemstones?season=spring</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Filters: <code>?slug=</code>, <code>?season=</code>, <code>?subtype_id=</code></p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: [{ id, name, slug, color_hex, symbolism, description }]`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Metals</div>
+                      <code className="text-xs font-mono">GET /metals?warmth=warm</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Filters: <code>?slug=</code>, <code>?warmth=</code>, <code>?subtype_id=</code></p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: [{ id, name, slug, color_hex, warmth, price_tier }]`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Historical Eras</div>
+                      <code className="text-xs font-mono">GET /eras?slug=art-deco</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Filters: <code>?slug=</code>, <code>?subtype_id=</code></p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: [{ id, name, slug, period, color_palette_notes, style_characteristics }]`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Prints</div>
+                      <code className="text-xs font-mono">GET /prints?category=floral</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Filters: <code>?slug=</code>, <code>?category=</code>, <code>?subtype_id=</code></p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: [{ id, name, slug, category, description, keywords }]`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Makeup Recommendations</div>
+                      <code className="text-xs font-mono">GET /makeup?subtype_slug=french-spring</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Filters: <code>?subtype_slug=</code>, <code>?subtype_id=</code>, <code>?category=</code></p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: [{ id, category, color_name, color_hex, finish, intensity }]`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Body Types</div>
+                      <code className="text-xs font-mono">GET /body-types?system=kibbe</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Filters: <code>?slug=</code>, <code>?system=</code></p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: [{ id, name, slug, system, characteristics, style_recommendations }]`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Masterpiece Paintings</div>
+                      <code className="text-xs font-mono">GET /paintings?season=autumn</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Filters: <code>?season=</code>, <code>?artist_id=</code></p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: [{ id, title, artist_name, museum, image_url, notable_colors }]`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible className="rounded-lg border bg-card">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between p-3 hover:bg-muted/50 transition-colors">
+                    <div className="text-left">
+                      <div className="text-muted-foreground text-xs mb-1">Sephirot Colors</div>
+                      <code className="text-xs font-mono">GET /sephirot</code>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-3 pb-3">
+                    <div className="text-xs text-muted-foreground border-t pt-2 mt-1">
+                      <p className="mb-2">Returns all Kabbalistic color mappings. No filters available.</p>
+                      <code className="block bg-muted p-2 rounded text-[10px] overflow-x-auto whitespace-pre">{`// Response: [{ id, name, hebrew_name, color_hex, meaning, attributes }]`}</code>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
                 <p className="text-xs text-muted-foreground mt-3">
                   Base URL: <code className="bg-muted px-1 rounded">https://ipcjabzvinmzyujsfige.supabase.co/functions/v1</code>
                 </p>
