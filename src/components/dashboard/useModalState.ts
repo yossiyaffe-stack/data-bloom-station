@@ -1,0 +1,64 @@
+import { useState, useCallback, useMemo } from "react";
+
+export type ModalKey = 
+  | "seasons" | "subtypes" | "colors" | "fabrics" | "gemstones" 
+  | "artists" | "eras" | "paintings" | "sephirot" | "makeup" 
+  | "metals" | "designers" | "prints" | "bodyTypes";
+
+export function useModalState() {
+  const [openModal, setOpenModal] = useState<ModalKey | null>(null);
+
+  const openModalHandler = useCallback((key: ModalKey) => {
+    setOpenModal(key);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setOpenModal(null);
+  }, []);
+
+  const isOpen = useCallback((key: ModalKey) => openModal === key, [openModal]);
+
+  const getOpenChange = useCallback(
+    (key: ModalKey) => (open: boolean) => {
+      if (open) setOpenModal(key);
+      else if (openModal === key) setOpenModal(null);
+    },
+    [openModal]
+  );
+
+  // Map stat titles to modal keys
+  const titleToModalKey: Record<string, ModalKey> = useMemo(() => ({
+    "Seasons": "seasons",
+    "Subtypes": "subtypes",
+    "Colors": "colors",
+    "Fabrics": "fabrics",
+    "Gemstones": "gemstones",
+    "Artists": "artists",
+    "Historical Eras": "eras",
+    "Masterpieces": "paintings",
+    "Sephirot Colors": "sephirot",
+    "Makeup": "makeup",
+    "Metals": "metals",
+    "Designers": "designers",
+    "Prints": "prints",
+    "Body Types": "bodyTypes",
+  }), []);
+
+  const getClickHandler = useCallback(
+    (title: string) => {
+      const key = titleToModalKey[title];
+      if (key) return () => openModalHandler(key);
+      return undefined;
+    },
+    [titleToModalKey, openModalHandler]
+  );
+
+  return {
+    openModal,
+    openModalHandler,
+    closeModal,
+    isOpen,
+    getOpenChange,
+    getClickHandler,
+  };
+}

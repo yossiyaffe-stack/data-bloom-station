@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle, Crown, Grid3X3, User, Eye, SwatchBook, History, AlertTriangle, CheckCircle2, XCircle, AlertCircle, ChevronDown } from "lucide-react";
@@ -6,9 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import * as CollapsiblePrimitive from "@radix-ui/react-collapsible";
+import { useModalState } from "@/components/dashboard/useModalState";
+import {
+  SeasonsModal, SubtypesModal, ColorsModal, FabricsModal, GemstonesModal,
+  ArtistsModal, ErasModal, PaintingsModal, SephirotModal, MakeupModal,
+  MetalsModal, DesignersModal, PrintsModal, BodyTypesModal
+} from "@/components/dashboard/DataModals";
 
 const Collapsible = CollapsiblePrimitive.Root;
 const CollapsibleTrigger = CollapsiblePrimitive.Trigger;
@@ -142,7 +145,7 @@ const CompletionItem = ({ title, current, total, priority, description }: Comple
 };
 
 const Index = () => {
-  const [artistsOpen, setArtistsOpen] = useState(false);
+  const { isOpen, getOpenChange, getClickHandler } = useModalState();
 
   const { data: seasons } = useQuery({
     queryKey: ["seasons"],
@@ -198,22 +201,6 @@ const Index = () => {
     },
   });
 
-  const {
-    data: artistsList,
-    isLoading: artistsListLoading,
-    error: artistsListError,
-  } = useQuery({
-    queryKey: ["artists", "list"],
-    enabled: artistsOpen,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("artists")
-        .select("id, name, slug, era, style, wikipedia_url")
-        .order("name");
-      if (error) throw error;
-      return data;
-    },
-  });
 
   const { data: eras } = useQuery({
     queryKey: ["eras"],
@@ -570,59 +557,21 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
       <div className="container mx-auto px-4 py-12">
-        <Dialog open={artistsOpen} onOpenChange={setArtistsOpen}>
-          <DialogContent className="max-w-3xl">
-            <DialogHeader>
-              <DialogTitle>Artists</DialogTitle>
-              <DialogDescription>All artists currently in the database.</DialogDescription>
-            </DialogHeader>
-            <div className="max-h-[60vh] overflow-auto rounded-md border">
-              {artistsListLoading ? (
-                <div className="p-4 space-y-2">
-                  <Skeleton className="h-5 w-48" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-5/6" />
-                </div>
-              ) : artistsListError ? (
-                <div className="p-4 text-sm text-muted-foreground">Couldn’t load artists right now.</div>
-              ) : (artistsList?.length ?? 0) === 0 ? (
-                <div className="p-4 text-sm text-muted-foreground">No artists found.</div>
-              ) : (
-                <ul className="divide-y">
-                  {artistsList!.map((a) => (
-                    <li key={a.id} className="p-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <div className="font-medium truncate">{a.name}</div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            <span className="font-mono">{a.slug}</span>
-                            {(a.era || a.style) && (
-                              <>
-                                {" "}• {a.era || ""}
-                                {a.era && a.style ? " — " : ""}
-                                {a.style || ""}
-                              </>
-                            )}
-                          </div>
-                        </div>
-                        {a.wikipedia_url ? (
-                          <a
-                            className="text-xs underline text-muted-foreground whitespace-nowrap"
-                            href={a.wikipedia_url}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            Wikipedia
-                          </a>
-                        ) : null}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
+        {/* Data Modals */}
+        <SeasonsModal open={isOpen("seasons")} onOpenChange={getOpenChange("seasons")} />
+        <SubtypesModal open={isOpen("subtypes")} onOpenChange={getOpenChange("subtypes")} />
+        <ColorsModal open={isOpen("colors")} onOpenChange={getOpenChange("colors")} />
+        <FabricsModal open={isOpen("fabrics")} onOpenChange={getOpenChange("fabrics")} />
+        <GemstonesModal open={isOpen("gemstones")} onOpenChange={getOpenChange("gemstones")} />
+        <ArtistsModal open={isOpen("artists")} onOpenChange={getOpenChange("artists")} />
+        <ErasModal open={isOpen("eras")} onOpenChange={getOpenChange("eras")} />
+        <PaintingsModal open={isOpen("paintings")} onOpenChange={getOpenChange("paintings")} />
+        <SephirotModal open={isOpen("sephirot")} onOpenChange={getOpenChange("sephirot")} />
+        <MakeupModal open={isOpen("makeup")} onOpenChange={getOpenChange("makeup")} />
+        <MetalsModal open={isOpen("metals")} onOpenChange={getOpenChange("metals")} />
+        <DesignersModal open={isOpen("designers")} onOpenChange={getOpenChange("designers")} />
+        <PrintsModal open={isOpen("prints")} onOpenChange={getOpenChange("prints")} />
+        <BodyTypesModal open={isOpen("bodyTypes")} onOpenChange={getOpenChange("bodyTypes")} />
 
         {/* Header */}
         <div className="text-center mb-12">
@@ -751,7 +700,7 @@ const Index = () => {
                   <StatCard
                     key={stat.title}
                     {...stat}
-                    onClick={stat.title === "Artists" ? () => setArtistsOpen(true) : undefined}
+                    onClick={getClickHandler(stat.title)}
                   />
                 ))
             }
