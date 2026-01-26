@@ -1,0 +1,10 @@
+project_id = "ipcjabzvinmzyujsfige"
+
+[functions.methodology]
+verify_jwt = false
+
+[functions.subtype]
+verify_jwt = false
+
+[functions.colors]
+verify_jwt = false
