@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image } from "lucide-react";
+import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface StatCardProps {
   title: string;
@@ -114,6 +115,33 @@ const Index = () => {
     },
   });
 
+  const { data: clientProfiles } = useQuery({
+    queryKey: ["client_profiles"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("client_profiles").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: trainingSamples } = useQuery({
+    queryKey: ["training_samples"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("training_samples").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: aiFeedback } = useQuery({
+    queryKey: ["ai_feedback"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("ai_feedback").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const { data: metadata } = useQuery({
     queryKey: ["metadata"],
     queryFn: async () => {
@@ -184,6 +212,30 @@ const Index = () => {
     },
   ];
 
+  const appDataStats = [
+    { 
+      title: "Client Profiles", 
+      count: clientProfiles?.length || 0, 
+      description: "From Client App",
+      icon: <Users className="h-5 w-5 text-indigo-700" />,
+      color: "bg-indigo-100"
+    },
+    { 
+      title: "Training Samples", 
+      count: trainingSamples?.length || 0, 
+      description: "From Trainer App",
+      icon: <Camera className="h-5 w-5 text-pink-700" />,
+      color: "bg-pink-100"
+    },
+    { 
+      title: "AI Corrections", 
+      count: aiFeedback?.length || 0, 
+      description: "Trainer feedback",
+      icon: <Lightbulb className="h-5 w-5 text-yellow-700" />,
+      color: "bg-yellow-100"
+    },
+  ];
+
   const methodologyName = metadata?.find(m => m.key === "methodology_name")?.value;
   const methodologyAuthor = metadata?.find(m => m.key === "methodology_author")?.value;
   const version = metadata?.find(m => m.key === "version")?.value;
@@ -211,12 +263,32 @@ const Index = () => {
           )}
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {isLoading
-            ? Array(8).fill(0).map((_, i) => <StatCardSkeleton key={i} />)
-            : stats.map((stat) => <StatCard key={stat.title} {...stat} />)
-          }
+        {/* App Data Stats */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Connected App Data
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {isLoading
+              ? Array(3).fill(0).map((_, i) => <StatCardSkeleton key={i} />)
+              : appDataStats.map((stat) => <StatCard key={stat.title} {...stat} />)
+            }
+          </div>
+        </div>
+
+        {/* Methodology Stats Grid */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Database className="h-5 w-5" />
+            Methodology Reference Data
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {isLoading
+              ? Array(8).fill(0).map((_, i) => <StatCardSkeleton key={i} />)
+              : stats.map((stat) => <StatCard key={stat.title} {...stat} />)
+            }
+          </div>
         </div>
 
         {/* Seasons Overview */}
@@ -257,23 +329,49 @@ const Index = () => {
               <PenTool className="h-5 w-5" />
               API Endpoints
             </CardTitle>
-            <CardDescription>Access methodology data from your client applications</CardDescription>
+            <CardDescription>Connect your Client and Trainer apps to this Data Hub</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="p-4 rounded-lg bg-muted/50 font-mono text-sm">
-                <div className="text-muted-foreground mb-1">Complete Methodology</div>
-                <code>GET /functions/v1/methodology</code>
-              </div>
-              <div className="p-4 rounded-lg bg-muted/50 font-mono text-sm">
-                <div className="text-muted-foreground mb-1">Get Subtype by Slug</div>
-                <code>GET /functions/v1/subtype?slug=wildflower-spring</code>
-              </div>
-              <div className="p-4 rounded-lg bg-muted/50 font-mono text-sm">
-                <div className="text-muted-foreground mb-1">Get Colors by Category</div>
-                <code>GET /functions/v1/colors?category=skin_tone</code>
-              </div>
-            </div>
+            <Tabs defaultValue="read" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="read">Read (GET)</TabsTrigger>
+                <TabsTrigger value="write">Write (POST/PUT)</TabsTrigger>
+              </TabsList>
+              <TabsContent value="read" className="space-y-4 mt-4">
+                <div className="p-4 rounded-lg bg-muted/50 font-mono text-sm">
+                  <div className="text-muted-foreground mb-1">Complete Methodology</div>
+                  <code>GET /functions/v1/methodology</code>
+                </div>
+                <div className="p-4 rounded-lg bg-muted/50 font-mono text-sm">
+                  <div className="text-muted-foreground mb-1">Get Subtype by Slug</div>
+                  <code>GET /functions/v1/subtype?slug=wildflower-spring</code>
+                </div>
+                <div className="p-4 rounded-lg bg-muted/50 font-mono text-sm">
+                  <div className="text-muted-foreground mb-1">Get Colors by Category</div>
+                  <code>GET /functions/v1/colors?category=skin_tone</code>
+                </div>
+              </TabsContent>
+              <TabsContent value="write" className="space-y-4 mt-4">
+                <div className="p-4 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 font-mono text-sm border-l-4 border-indigo-500">
+                  <div className="text-indigo-700 dark:text-indigo-300 font-semibold mb-2">Client App Endpoints</div>
+                  <div className="space-y-2 text-xs">
+                    <div><code>POST /functions/v1/client-data?resource=profile</code> - Create/update client</div>
+                    <div><code>POST /functions/v1/client-data?resource=photo</code> - Save photo analysis</div>
+                    <div><code>POST /functions/v1/client-data?resource=palette</code> - Save palette</div>
+                    <div><code>GET /functions/v1/client-data?resource=profile&external_id=xxx</code> - Get client</div>
+                  </div>
+                </div>
+                <div className="p-4 rounded-lg bg-pink-50 dark:bg-pink-950/20 font-mono text-sm border-l-4 border-pink-500">
+                  <div className="text-pink-700 dark:text-pink-300 font-semibold mb-2">Trainer App Endpoints</div>
+                  <div className="space-y-2 text-xs">
+                    <div><code>POST /functions/v1/trainer-data?resource=sample</code> - Add training sample</div>
+                    <div><code>POST /functions/v1/trainer-data?resource=feedback</code> - Submit AI correction</div>
+                    <div><code>POST /functions/v1/trainer-data?resource=painting</code> - Add masterpiece</div>
+                    <div><code>POST /functions/v1/trainer-data?resource=subtype</code> - Update methodology</div>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>

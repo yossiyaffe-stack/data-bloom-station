@@ -14,6 +14,88 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_feedback: {
+        Row: {
+          ai_predicted_season_id: string | null
+          ai_predicted_subtype_id: string | null
+          corrected_by: string | null
+          corrected_season_id: string | null
+          corrected_subtype_id: string | null
+          correction_reason: string | null
+          created_at: string | null
+          id: string
+          photo_analysis_id: string | null
+          training_sample_id: string | null
+        }
+        Insert: {
+          ai_predicted_season_id?: string | null
+          ai_predicted_subtype_id?: string | null
+          corrected_by?: string | null
+          corrected_season_id?: string | null
+          corrected_subtype_id?: string | null
+          correction_reason?: string | null
+          created_at?: string | null
+          id?: string
+          photo_analysis_id?: string | null
+          training_sample_id?: string | null
+        }
+        Update: {
+          ai_predicted_season_id?: string | null
+          ai_predicted_subtype_id?: string | null
+          corrected_by?: string | null
+          corrected_season_id?: string | null
+          corrected_subtype_id?: string | null
+          correction_reason?: string | null
+          created_at?: string | null
+          id?: string
+          photo_analysis_id?: string | null
+          training_sample_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_feedback_ai_predicted_season_id_fkey"
+            columns: ["ai_predicted_season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_ai_predicted_subtype_id_fkey"
+            columns: ["ai_predicted_subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_corrected_season_id_fkey"
+            columns: ["corrected_season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_corrected_subtype_id_fkey"
+            columns: ["corrected_subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_photo_analysis_id_fkey"
+            columns: ["photo_analysis_id"]
+            isOneToOne: false
+            referencedRelation: "photo_analyses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_training_sample_id_fkey"
+            columns: ["training_sample_id"]
+            isOneToOne: false
+            referencedRelation: "training_samples"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artists: {
         Row: {
           color_characteristics: string | null
@@ -85,6 +167,60 @@ export type Database = {
           system?: string | null
         }
         Relationships: []
+      }
+      client_profiles: {
+        Row: {
+          analysis_notes: string | null
+          assigned_season_id: string | null
+          assigned_subtype_id: string | null
+          created_at: string | null
+          email: string | null
+          external_id: string | null
+          id: string
+          name: string | null
+          quiz_answers: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          analysis_notes?: string | null
+          assigned_season_id?: string | null
+          assigned_subtype_id?: string | null
+          created_at?: string | null
+          email?: string | null
+          external_id?: string | null
+          id?: string
+          name?: string | null
+          quiz_answers?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          analysis_notes?: string | null
+          assigned_season_id?: string | null
+          assigned_subtype_id?: string | null
+          created_at?: string | null
+          email?: string | null
+          external_id?: string | null
+          id?: string
+          name?: string | null
+          quiz_answers?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_profiles_assigned_season_id_fkey"
+            columns: ["assigned_season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_profiles_assigned_subtype_id_fkey"
+            columns: ["assigned_subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       colors: {
         Row: {
@@ -355,6 +491,53 @@ export type Database = {
         }
         Relationships: []
       }
+      photo_analyses: {
+        Row: {
+          ai_prediction: Json | null
+          client_profile_id: string | null
+          contrast_level: string | null
+          created_at: string | null
+          extracted_features: Json | null
+          eye_color: string | null
+          hair_color: string | null
+          id: string
+          photo_url: string | null
+          skin_undertone: string | null
+        }
+        Insert: {
+          ai_prediction?: Json | null
+          client_profile_id?: string | null
+          contrast_level?: string | null
+          created_at?: string | null
+          extracted_features?: Json | null
+          eye_color?: string | null
+          hair_color?: string | null
+          id?: string
+          photo_url?: string | null
+          skin_undertone?: string | null
+        }
+        Update: {
+          ai_prediction?: Json | null
+          client_profile_id?: string | null
+          contrast_level?: string | null
+          created_at?: string | null
+          extracted_features?: Json | null
+          eye_color?: string | null
+          hair_color?: string | null
+          id?: string
+          photo_url?: string | null
+          skin_undertone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photo_analyses_client_profile_id_fkey"
+            columns: ["client_profile_id"]
+            isOneToOne: false
+            referencedRelation: "client_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       prints: {
         Row: {
           category: string | null
@@ -385,6 +568,41 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_palettes: {
+        Row: {
+          client_profile_id: string | null
+          color_ids: string[] | null
+          created_at: string | null
+          id: string
+          name: string
+          notes: string | null
+        }
+        Insert: {
+          client_profile_id?: string | null
+          color_ids?: string[] | null
+          created_at?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+        }
+        Update: {
+          client_profile_id?: string | null
+          color_ids?: string[] | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_palettes_client_profile_id_fkey"
+            columns: ["client_profile_id"]
+            isOneToOne: false
+            referencedRelation: "client_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seasons: {
         Row: {
           characteristics: Json | null
@@ -414,6 +632,47 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      session_history: {
+        Row: {
+          client_profile_id: string | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          recommendations: Json | null
+          session_date: string | null
+          session_type: string | null
+          trainer_notes: string | null
+        }
+        Insert: {
+          client_profile_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          recommendations?: Json | null
+          session_date?: string | null
+          session_type?: string | null
+          trainer_notes?: string | null
+        }
+        Update: {
+          client_profile_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          recommendations?: Json | null
+          session_date?: string | null
+          session_type?: string | null
+          trainer_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_history_client_profile_id_fkey"
+            columns: ["client_profile_id"]
+            isOneToOne: false
+            referencedRelation: "client_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subtype_artists: {
         Row: {
@@ -749,6 +1008,66 @@ export type Database = {
             columns: ["season_id"]
             isOneToOne: false
             referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_samples: {
+        Row: {
+          assigned_season_id: string | null
+          assigned_subtype_id: string | null
+          confidence_score: number | null
+          contrast_level: string | null
+          created_at: string | null
+          eye_color: string | null
+          hair_color: string | null
+          id: string
+          labeled_by: string | null
+          notes: string | null
+          photo_url: string
+          skin_undertone: string | null
+        }
+        Insert: {
+          assigned_season_id?: string | null
+          assigned_subtype_id?: string | null
+          confidence_score?: number | null
+          contrast_level?: string | null
+          created_at?: string | null
+          eye_color?: string | null
+          hair_color?: string | null
+          id?: string
+          labeled_by?: string | null
+          notes?: string | null
+          photo_url: string
+          skin_undertone?: string | null
+        }
+        Update: {
+          assigned_season_id?: string | null
+          assigned_subtype_id?: string | null
+          confidence_score?: number | null
+          contrast_level?: string | null
+          created_at?: string | null
+          eye_color?: string | null
+          hair_color?: string | null
+          id?: string
+          labeled_by?: string | null
+          notes?: string | null
+          photo_url?: string
+          skin_undertone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_samples_assigned_season_id_fkey"
+            columns: ["assigned_season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_samples_assigned_subtype_id_fkey"
+            columns: ["assigned_subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
             referencedColumns: ["id"]
           },
         ]

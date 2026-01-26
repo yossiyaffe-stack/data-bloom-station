@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.colors]
 verify_jwt = false
+
+[functions.client-data]
+verify_jwt = false
+
+[functions.trainer-data]
+verify_jwt = false
