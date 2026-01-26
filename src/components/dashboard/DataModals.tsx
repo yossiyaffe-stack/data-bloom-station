@@ -16,6 +16,10 @@ interface ModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface SeasonDetailModalProps extends ModalProps {
+  seasonId: string | null;
+}
+
 // Artists Modal
 export const ArtistsModal = ({ open, onOpenChange }: ModalProps) => {
   const { data, isLoading, error } = useQuery({
@@ -110,6 +114,97 @@ export const SeasonsModal = ({ open, onOpenChange }: ModalProps) => {
                 </li>
               ))}
             </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Season Detail Modal (with subtypes)
+export const SeasonDetailModal = ({ open, onOpenChange, seasonId }: SeasonDetailModalProps) => {
+  const { data: season, isLoading: seasonLoading } = useQuery({
+    queryKey: ["season-detail", seasonId],
+    enabled: open && !!seasonId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("seasons")
+        .select("*")
+        .eq("id", seasonId!)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: subtypes, isLoading: subtypesLoading } = useQuery({
+    queryKey: ["season-subtypes", seasonId],
+    enabled: open && !!seasonId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("subtypes")
+        .select("id, name, slug, beauty_statement, unique_features")
+        .eq("season_id", seasonId!)
+        .order("name");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const isLoading = seasonLoading || subtypesLoading;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            {season?.name || "Season Details"}
+            {season?.undertone && (
+              <Badge variant={season.undertone === "warm" ? "default" : "secondary"}>{season.undertone}</Badge>
+            )}
+          </DialogTitle>
+          <DialogDescription>{season?.description}</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? (
+            <LoadingSkeleton />
+          ) : (
+            <div className="space-y-6 p-1">
+              {/* Season Characteristics */}
+              {season?.characteristics && Array.isArray(season.characteristics) && season.characteristics.length > 0 && (
+                <div>
+                  <h4 className="font-semibold mb-2">Characteristics</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {(season.characteristics as string[]).map((char, i) => (
+                      <Badge key={i} variant="outline">{char}</Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Subtypes */}
+              <div>
+                <h4 className="font-semibold mb-3">Subtypes ({subtypes?.length || 0})</h4>
+                {subtypes && subtypes.length > 0 ? (
+                  <ul className="divide-y border rounded-lg">
+                    {subtypes.map((subtype) => (
+                      <li key={subtype.id} className="p-4 hover:bg-muted/50">
+                        <div className="font-medium">{subtype.name}</div>
+                        <code className="text-xs text-muted-foreground font-mono">{subtype.slug}</code>
+                        {subtype.beauty_statement && (
+                          <p className="text-sm text-muted-foreground mt-2 italic">"{subtype.beauty_statement}"</p>
+                        )}
+                        {subtype.unique_features && (
+                          <p className="text-sm text-muted-foreground mt-1">{subtype.unique_features}</p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No subtypes found for this season.</p>
+                )}
+              </div>
+            </div>
           )}
         </ScrollArea>
       </DialogContent>
