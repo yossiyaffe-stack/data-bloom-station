@@ -90,10 +90,13 @@ serve(async (req) => {
 
       // Return stats for trainers
       if (resource === "stats") {
-        const [samples, feedback, paintings] = await Promise.all([
+        const [samples, feedback, paintings, sephirot, makeup, metals] = await Promise.all([
           supabase.from("training_samples").select("id", { count: "exact" }),
           supabase.from("ai_feedback").select("id", { count: "exact" }),
-          supabase.from("masterpiece_paintings").select("id", { count: "exact" })
+          supabase.from("masterpiece_paintings").select("id", { count: "exact" }),
+          supabase.from("sephirot_colors").select("id", { count: "exact" }),
+          supabase.from("makeup_recommendations").select("id", { count: "exact" }),
+          supabase.from("metals").select("id", { count: "exact" })
         ]);
 
         return new Response(
@@ -102,9 +105,82 @@ serve(async (req) => {
             data: {
               training_samples: samples.count || 0,
               ai_corrections: feedback.count || 0,
-              masterpiece_paintings: paintings.count || 0
+              masterpiece_paintings: paintings.count || 0,
+              sephirot_colors: sephirot.count || 0,
+              makeup_recommendations: makeup.count || 0,
+              metals: metals.count || 0
             }
           }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // GET sephirot colors
+      if (resource === "sephirot") {
+        const { data, error } = await supabase
+          .from("sephirot_colors")
+          .select("*")
+          .order("position_on_tree", { ascending: true });
+        
+        if (error) throw error;
+        return new Response(
+          JSON.stringify({ success: true, data }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // GET makeup recommendations
+      if (resource === "makeup") {
+        const subtypeId = url.searchParams.get("subtype_id");
+        const category = url.searchParams.get("category");
+        
+        let query = supabase
+          .from("makeup_recommendations")
+          .select(`*, subtypes(name, slug)`)
+          .order("created_at", { ascending: false });
+
+        if (subtypeId) query = query.eq("subtype_id", subtypeId);
+        if (category) query = query.eq("category", category);
+
+        const { data, error } = await query;
+        if (error) throw error;
+        
+        return new Response(
+          JSON.stringify({ success: true, data }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // GET metals
+      if (resource === "metals") {
+        const { data, error } = await supabase
+          .from("metals")
+          .select("*")
+          .order("name", { ascending: true });
+        
+        if (error) throw error;
+        return new Response(
+          JSON.stringify({ success: true, data }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // GET subtype metals
+      if (resource === "subtype-metals") {
+        const subtypeId = url.searchParams.get("subtype_id");
+        
+        let query = supabase
+          .from("subtype_metals")
+          .select(`*, subtypes(name, slug), metals(name, slug, warmth)`)
+          .order("rating", { ascending: true });
+
+        if (subtypeId) query = query.eq("subtype_id", subtypeId);
+
+        const { data, error } = await query;
+        if (error) throw error;
+        
+        return new Response(
+          JSON.stringify({ success: true, data }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -190,6 +266,66 @@ serve(async (req) => {
         );
       }
 
+      // POST sephirot color
+      if (resource === "sephirot") {
+        const { data, error } = await supabase
+          .from("sephirot_colors")
+          .upsert(body, { onConflict: "slug" })
+          .select()
+          .single();
+        
+        if (error) throw error;
+        return new Response(
+          JSON.stringify({ success: true, data }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // POST makeup recommendation
+      if (resource === "makeup") {
+        const { data, error } = await supabase
+          .from("makeup_recommendations")
+          .insert(body)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        return new Response(
+          JSON.stringify({ success: true, data }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // POST metal
+      if (resource === "metal") {
+        const { data, error } = await supabase
+          .from("metals")
+          .upsert(body, { onConflict: "slug" })
+          .select()
+          .single();
+        
+        if (error) throw error;
+        return new Response(
+          JSON.stringify({ success: true, data }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // POST subtype-metal mapping
+      if (resource === "subtype-metal") {
+        const { data, error } = await supabase
+          .from("subtype_metals")
+          .upsert(body, { onConflict: "subtype_id,metal_id" })
+          .select()
+          .single();
+        
+        if (error) throw error;
+        return new Response(
+          JSON.stringify({ success: true, data }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       return new Response(
         JSON.stringify({ success: false, error: "Invalid resource" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -213,6 +349,10 @@ serve(async (req) => {
         : resource === "painting" ? "masterpiece_paintings"
         : resource === "color" ? "colors"
         : resource === "subtype" ? "subtypes"
+        : resource === "sephirot" ? "sephirot_colors"
+        : resource === "makeup" ? "makeup_recommendations"
+        : resource === "metal" ? "metals"
+        : resource === "subtype-metal" ? "subtype_metals"
         : null;
 
       if (!table) {
@@ -250,6 +390,10 @@ serve(async (req) => {
       const table = resource === "sample" ? "training_samples"
         : resource === "feedback" ? "ai_feedback"
         : resource === "painting" ? "masterpiece_paintings"
+        : resource === "sephirot" ? "sephirot_colors"
+        : resource === "makeup" ? "makeup_recommendations"
+        : resource === "metal" ? "metals"
+        : resource === "subtype-metal" ? "subtype_metals"
         : null;
 
       if (!table) {
