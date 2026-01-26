@@ -617,6 +617,294 @@ export const BodyTypesModal = ({ open, onOpenChange }: ModalProps) => {
   );
 };
 
+// Data Completion Status Modal
+export const CompletionStatusModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data: subtypesCount } = useQuery({
+    queryKey: ["subtypes-count-modal"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtypes").select("id");
+      if (error) throw error;
+      return data?.length || 40;
+    },
+  });
+
+  const { data: makeupCoverage } = useQuery({
+    queryKey: ["makeup-coverage-modal"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("makeup_recommendations").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: fabricsCoverage } = useQuery({
+    queryKey: ["fabrics-coverage-modal"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_fabrics").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: erasCoverage } = useQuery({
+    queryKey: ["eras-coverage-modal"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_eras").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: designersCoverage } = useQuery({
+    queryKey: ["designers-coverage-modal"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_designers").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: gemstonesCoverage } = useQuery({
+    queryKey: ["gemstones-coverage-modal"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_gemstones").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: artistsCoverage } = useQuery({
+    queryKey: ["artists-coverage-modal"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_artists").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: metalsCoverage } = useQuery({
+    queryKey: ["metals-coverage-modal"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_metals").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: colorsCoverage } = useQuery({
+    queryKey: ["colors-coverage-modal"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_colors").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: printsCoverage } = useQuery({
+    queryKey: ["prints-coverage-modal"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_prints").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const totalSubtypes = subtypesCount || 40;
+
+  const coverageItems = [
+    { label: "Makeup Recommendations", current: makeupCoverage || 0 },
+    { label: "Fabric Mappings", current: fabricsCoverage || 0 },
+    { label: "Historical Era Links", current: erasCoverage || 0 },
+    { label: "Designer Associations", current: designersCoverage || 0 },
+    { label: "Gemstone Mappings", current: gemstonesCoverage || 0 },
+    { label: "Artist Inspirations", current: artistsCoverage || 0 },
+    { label: "Metal Recommendations", current: metalsCoverage || 0 },
+    { label: "Color Mappings", current: colorsCoverage || 0 },
+    { label: "Print Mappings", current: printsCoverage || 0 },
+  ];
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Data Completion Status</DialogTitle>
+          <DialogDescription>Junction table coverage - how many of the {totalSubtypes} subtypes have mappings</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          <div className="space-y-4 p-1">
+            {coverageItems.map(({ label, current }) => {
+              const percentage = Math.round((current / totalSubtypes) * 100);
+              const status = percentage >= 85 ? "complete" : percentage >= 50 ? "medium" : percentage >= 30 ? "high" : "critical";
+              const statusColors = {
+                critical: "bg-red-500",
+                high: "bg-orange-500",
+                medium: "bg-yellow-500",
+                complete: "bg-green-500",
+              };
+              return (
+                <div key={label} className="p-4 rounded-lg border bg-card">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium">{label}</span>
+                    <Badge variant="outline">{current} / {totalSubtypes}</Badge>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className={`h-full ${statusColors[status]} transition-all`} style={{ width: `${percentage}%` }} />
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1 text-right">{percentage}%</div>
+                </div>
+              );
+            })}
+          </div>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Junction Mappings Modal
+export const JunctionMappingsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data: artistsCount, isLoading: artistsLoading } = useQuery({
+    queryKey: ["subtype_artists-count"],
+    enabled: open,
+    queryFn: async () => {
+      const { count, error } = await supabase.from("subtype_artists").select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  const { data: colorsCount, isLoading: colorsLoading } = useQuery({
+    queryKey: ["subtype_colors-count"],
+    enabled: open,
+    queryFn: async () => {
+      const { count, error } = await supabase.from("subtype_colors").select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  const { data: designersCount, isLoading: designersLoading } = useQuery({
+    queryKey: ["subtype_designers-count"],
+    enabled: open,
+    queryFn: async () => {
+      const { count, error } = await supabase.from("subtype_designers").select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  const { data: erasCount, isLoading: erasLoading } = useQuery({
+    queryKey: ["subtype_eras-count"],
+    enabled: open,
+    queryFn: async () => {
+      const { count, error } = await supabase.from("subtype_eras").select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  const { data: fabricsCount, isLoading: fabricsLoading } = useQuery({
+    queryKey: ["subtype_fabrics-count"],
+    enabled: open,
+    queryFn: async () => {
+      const { count, error } = await supabase.from("subtype_fabrics").select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  const { data: gemstonesCount, isLoading: gemstonesLoading } = useQuery({
+    queryKey: ["subtype_gemstones-count"],
+    enabled: open,
+    queryFn: async () => {
+      const { count, error } = await supabase.from("subtype_gemstones").select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  const { data: metalsCount, isLoading: metalsLoading } = useQuery({
+    queryKey: ["subtype_metals-count"],
+    enabled: open,
+    queryFn: async () => {
+      const { count, error } = await supabase.from("subtype_metals").select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  const { data: printsCount, isLoading: printsLoading } = useQuery({
+    queryKey: ["subtype_prints-count"],
+    enabled: open,
+    queryFn: async () => {
+      const { count, error } = await supabase.from("subtype_prints").select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  const { data: makeupCount, isLoading: makeupLoading } = useQuery({
+    queryKey: ["makeup_recommendations-count"],
+    enabled: open,
+    queryFn: async () => {
+      const { count, error } = await supabase.from("makeup_recommendations").select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  const junctionItems = [
+    { table: "subtype_artists", label: "Subtype → Artists", description: "Links subtypes to master artist inspirations", count: artistsCount, isLoading: artistsLoading },
+    { table: "subtype_colors", label: "Subtype → Colors", description: "Links subtypes to their recommended color palette", count: colorsCount, isLoading: colorsLoading },
+    { table: "subtype_designers", label: "Subtype → Designers", description: "Links subtypes to fashion designer recommendations", count: designersCount, isLoading: designersLoading },
+    { table: "subtype_eras", label: "Subtype → Eras", description: "Links subtypes to historical fashion eras", count: erasCount, isLoading: erasLoading },
+    { table: "subtype_fabrics", label: "Subtype → Fabrics", description: "Links subtypes to recommended fabrics with ratings", count: fabricsCount, isLoading: fabricsLoading },
+    { table: "subtype_gemstones", label: "Subtype → Gemstones", description: "Links subtypes to gemstone recommendations", count: gemstonesCount, isLoading: gemstonesLoading },
+    { table: "subtype_metals", label: "Subtype → Metals", description: "Links subtypes to metal recommendations (gold, silver, etc.)", count: metalsCount, isLoading: metalsLoading },
+    { table: "subtype_prints", label: "Subtype → Prints", description: "Links subtypes to pattern recommendations", count: printsCount, isLoading: printsLoading },
+    { table: "makeup_recommendations", label: "Makeup Recommendations", description: "Lips, blush, eyeshadow, and nail recommendations per subtype", count: makeupCount, isLoading: makeupLoading },
+  ];
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Junction Table Mappings</DialogTitle>
+          <DialogDescription>Linking subtypes to their recommended elements</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          <ul className="divide-y">
+            {junctionItems.map(({ table, label, description, count, isLoading }) => (
+              <li key={table} className="p-4 hover:bg-muted/50">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="font-medium">{label}</div>
+                    <div className="text-xs text-muted-foreground mt-1">{description}</div>
+                    <code className="text-xs text-muted-foreground font-mono mt-1 block">{table}</code>
+                  </div>
+                  <Badge variant="secondary" className="shrink-0">
+                    {isLoading ? "..." : `${count} rows`}
+                  </Badge>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 // Helper components
 const LoadingSkeleton = () => (
   <div className="p-4 space-y-2">

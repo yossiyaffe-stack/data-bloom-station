@@ -10,7 +10,8 @@ import { useModalState } from "@/components/dashboard/useModalState";
 import {
   SeasonsModal, SubtypesModal, ColorsModal, FabricsModal, GemstonesModal,
   ArtistsModal, ErasModal, PaintingsModal, SephirotModal, MakeupModal,
-  MetalsModal, DesignersModal, PrintsModal, BodyTypesModal
+  MetalsModal, DesignersModal, PrintsModal, BodyTypesModal,
+  CompletionStatusModal, JunctionMappingsModal
 } from "@/components/dashboard/DataModals";
 
 const Collapsible = CollapsiblePrimitive.Root;
@@ -145,7 +146,7 @@ const CompletionItem = ({ title, current, total, priority, description }: Comple
 };
 
 const Index = () => {
-  const { isOpen, getOpenChange, getClickHandler } = useModalState();
+  const { isOpen, getOpenChange, getClickHandler, openModalHandler } = useModalState();
 
   const { data: seasons } = useQuery({
     queryKey: ["seasons"],
@@ -572,6 +573,8 @@ const Index = () => {
         <DesignersModal open={isOpen("designers")} onOpenChange={getOpenChange("designers")} />
         <PrintsModal open={isOpen("prints")} onOpenChange={getOpenChange("prints")} />
         <BodyTypesModal open={isOpen("bodyTypes")} onOpenChange={getOpenChange("bodyTypes")} />
+        <CompletionStatusModal open={isOpen("completionStatus")} onOpenChange={getOpenChange("completionStatus")} />
+        <JunctionMappingsModal open={isOpen("junctionMappings")} onOpenChange={getOpenChange("junctionMappings")} />
 
         {/* Header */}
         <div className="text-center mb-12">
@@ -596,11 +599,23 @@ const Index = () => {
         {/* Attention Needed Section */}
         <Card className="mb-8 border-2 border-orange-200 dark:border-orange-900">
           <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30">
-            <CardTitle className="flex items-center gap-2 text-orange-800 dark:text-orange-200">
+            <CardTitle 
+              className="flex items-center gap-2 text-orange-800 dark:text-orange-200 cursor-pointer hover:underline"
+              onClick={() => openModalHandler("completionStatus")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModalHandler("completionStatus"); } }}
+            >
               <AlertTriangle className="h-5 w-5" />
               Data Completion Status
             </CardTitle>
-            <CardDescription>
+            <CardDescription
+              className="cursor-pointer hover:underline"
+              onClick={() => openModalHandler("junctionMappings")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModalHandler("junctionMappings"); } }}
+            >
               Junction table mappings - linking subtypes to their recommended elements
             </CardDescription>
           </CardHeader>
