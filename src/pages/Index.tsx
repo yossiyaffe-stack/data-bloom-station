@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb } from "lucide-react";
+import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -115,6 +115,33 @@ const Index = () => {
     },
   });
 
+  const { data: sephirotColors } = useQuery({
+    queryKey: ["sephirot_colors"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("sephirot_colors").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: makeupRecommendations } = useQuery({
+    queryKey: ["makeup_recommendations"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("makeup_recommendations").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: metals } = useQuery({
+    queryKey: ["metals"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("metals").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const { data: clientProfiles } = useQuery({
     queryKey: ["client_profiles"],
     queryFn: async () => {
@@ -209,6 +236,27 @@ const Index = () => {
       description: "Curated paintings",
       icon: <Image className="h-5 w-5 text-teal-700" />,
       color: "bg-teal-100"
+    },
+    { 
+      title: "Sephirot Colors", 
+      count: sephirotColors?.length || 0, 
+      description: "Kabbalistic mappings",
+      icon: <Sparkles className="h-5 w-5 text-violet-700" />,
+      color: "bg-violet-100"
+    },
+    { 
+      title: "Makeup", 
+      count: makeupRecommendations?.length || 0, 
+      description: "Beauty recommendations",
+      icon: <Heart className="h-5 w-5 text-pink-700" />,
+      color: "bg-pink-100"
+    },
+    { 
+      title: "Metals", 
+      count: metals?.length || 0, 
+      description: "Jewelry metal guide",
+      icon: <Circle className="h-5 w-5 text-amber-700" />,
+      color: "bg-amber-100"
     },
   ];
 
