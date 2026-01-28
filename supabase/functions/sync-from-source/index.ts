@@ -139,6 +139,12 @@ serve(async (req) => {
           results.push(artistResult);
         }
 
+        // Sync training samples (photo annotations)
+        if (exportData.training_samples?.length > 0) {
+          const sampleResult = await syncTrainingSamples(supabase, exportData.training_samples, source.app_name);
+          results.push(sampleResult);
+        }
+
         // Update sync status and timestamp
         await supabase
           .from("sync_sources")
@@ -313,6 +319,58 @@ async function syncArtists(supabase: any, artists: any[], sourceName: string): P
       }
     } catch (e) {
       result.errors.push(`Artist ${artist.slug}: ${e}`);
+    }
+  }
+  
+  return result;
+}
+
+async function syncTrainingSamples(supabase: any, samples: any[], sourceName: string): Promise<SyncResult> {
+  const result: SyncResult = { table: "training_samples", inserted: 0, updated: 0, errors: [] };
+  
+  // Pre-fetch seasons and subtypes for slug lookup
+  const { data: seasons } = await supabase.from("seasons").select("id, name");
+  const { data: subtypes } = await supabase.from("subtypes").select("id, slug");
+  
+  const seasonMap = new Map((seasons || []).map((s: any) => [s.name.toLowerCase(), s.id]));
+  const subtypeMap = new Map((subtypes || []).map((s: any) => [s.slug, s.id]));
+  
+  for (const sample of samples) {
+    try {
+      // Look up season_id from season name/slug
+      let seasonId = sample.assigned_season_id;
+      if (!seasonId && sample.season_slug) {
+        seasonId = seasonMap.get(sample.season_slug.toLowerCase());
+      }
+      
+      // Look up subtype_id from slug
+      let subtypeId = sample.assigned_subtype_id;
+      if (!subtypeId && sample.subtype_slug) {
+        subtypeId = subtypeMap.get(sample.subtype_slug);
+      }
+      
+      const { error } = await supabase
+        .from("training_samples")
+        .upsert({
+          photo_url: sample.photo_url,
+          assigned_season_id: seasonId,
+          assigned_subtype_id: subtypeId,
+          skin_undertone: sample.skin_undertone,
+          eye_color: sample.eye_color,
+          hair_color: sample.hair_color,
+          contrast_level: sample.contrast_level,
+          notes: sample.notes,
+          labeled_by: sample.labeled_by || sourceName,
+          confidence_score: sample.confidence_score
+        }, { onConflict: "photo_url" });
+      
+      if (error) {
+        result.errors.push(`Sample ${sample.photo_url}: ${error.message}`);
+      } else {
+        result.updated++;
+      }
+    } catch (e) {
+      result.errors.push(`Sample ${sample.photo_url}: ${e}`);
     }
   }
   
