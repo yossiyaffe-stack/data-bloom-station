@@ -78,6 +78,41 @@ serve(async (req) => {
       );
     }
 
+    // Sync from ALL registered sources (for cron jobs)
+    if (action === "sync-all") {
+      const { data: sources, error: sourcesError } = await supabase
+        .from("sync_sources")
+        .select("*")
+        .order("app_name");
+      
+      if (sourcesError) throw sourcesError;
+      
+      const allResults: { source: string; results: SyncResult[]; error?: string }[] = [];
+      
+      for (const source of sources || []) {
+        try {
+          const syncResults = await syncFromSource(supabase, source);
+          allResults.push({ source: source.app_name, results: syncResults });
+        } catch (e) {
+          allResults.push({ 
+            source: source.app_name, 
+            results: [], 
+            error: e instanceof Error ? e.message : String(e) 
+          });
+        }
+      }
+      
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          synced_sources: allResults.length,
+          results: allResults,
+          synced_at: new Date().toISOString()
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Sync from a specific source
     if (action === "sync") {
       if (!sourceId) {
@@ -95,112 +130,7 @@ serve(async (req) => {
         throw new Error(`Source not found: ${sourceId}`);
       }
 
-      // Update status to syncing
-      await supabase
-        .from("sync_sources")
-        .update({ sync_status: "syncing" })
-        .eq("id", sourceId);
-
-      const results: SyncResult[] = [];
-      
-      try {
-        // Fetch data from source app's export endpoint
-        // Try /all sub-path first (Streams format), fall back to root
-        let exportUrl = `${source.app_url}${source.export_endpoint}`;
-        console.log(`Fetching from: ${exportUrl}`);
-        
-        let response = await fetch(exportUrl);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch from source: ${response.status}`);
-        }
-        
-        let exportData = await response.json();
-        
-        // Check if this is a Streams-style export with sub-paths
-        if (exportData.endpoints && !exportData.subtypes) {
-          // Fetch from /all sub-path
-          const allUrl = `${exportUrl}/all`;
-          console.log(`Streams format detected, fetching from: ${allUrl}`);
-          response = await fetch(allUrl);
-          if (response.ok) {
-            exportData = await response.json();
-          }
-        }
-        
-        // Handle Streams nested subtypes format (by season)
-        let subtypesToSync: any[] = [];
-        if (exportData.subtypes) {
-          if (Array.isArray(exportData.subtypes)) {
-            subtypesToSync = exportData.subtypes;
-          } else {
-            // Streams format: { spring: [...], summer: [...], autumn: [...], winter: [...] }
-            for (const [season, types] of Object.entries(exportData.subtypes)) {
-              if (Array.isArray(types)) {
-                subtypesToSync.push(...(types as any[]).map(t => ({ ...t, season })));
-              }
-            }
-          }
-        }
-        
-        if (subtypesToSync.length > 0) {
-          const subtypeResult = await syncSubtypesFromStreams(supabase, subtypesToSync, source.app_name);
-          results.push(subtypeResult);
-        }
-
-        // Handle Streams grouped colors format OR flat array
-        let colorsToSync: any[] = [];
-        if (exportData.colors) {
-          if (Array.isArray(exportData.colors)) {
-            colorsToSync = exportData.colors;
-          } else {
-            // Streams format: { skinTones: [...], neutrals: [...], etc. }
-            for (const [category, colors] of Object.entries(exportData.colors)) {
-              if (Array.isArray(colors)) {
-                colorsToSync.push(...(colors as any[]).map(c => ({ ...c, category })));
-              }
-            }
-          }
-        }
-        
-        if (colorsToSync.length > 0) {
-          const colorResult = await syncColors(supabase, colorsToSync, source.app_name);
-          results.push(colorResult);
-        }
-
-        // Sync fabrics
-        if (exportData.fabrics?.length > 0) {
-          const fabricResult = await syncFabrics(supabase, exportData.fabrics, source.app_name);
-          results.push(fabricResult);
-        }
-
-        // Sync artists
-        if (exportData.artists?.length > 0) {
-          const artistResult = await syncArtists(supabase, exportData.artists, source.app_name);
-          results.push(artistResult);
-        }
-
-        // Sync training samples (photo annotations)
-        if (exportData.training_samples?.length > 0) {
-          const sampleResult = await syncTrainingSamples(supabase, exportData.training_samples, source.app_name);
-          results.push(sampleResult);
-        }
-
-        // Update sync status and timestamp
-        await supabase
-          .from("sync_sources")
-          .update({ 
-            sync_status: "completed",
-            last_sync_at: new Date().toISOString()
-          })
-          .eq("id", sourceId);
-
-      } catch (syncError) {
-        await supabase
-          .from("sync_sources")
-          .update({ sync_status: "failed" })
-          .eq("id", sourceId);
-        throw syncError;
-      }
+      const results = await syncFromSource(supabase, source);
 
       return new Response(
         JSON.stringify({ 
@@ -224,6 +154,114 @@ serve(async (req) => {
     );
   }
 });
+
+// Main sync logic for a single source
+async function syncFromSource(supabase: any, source: any): Promise<SyncResult[]> {
+  const results: SyncResult[] = [];
+  
+  // Update status to syncing
+  await supabase
+    .from("sync_sources")
+    .update({ sync_status: "syncing" })
+    .eq("id", source.id);
+  
+  try {
+    // Fetch data from source app's export endpoint
+    let exportUrl = `${source.app_url}${source.export_endpoint}`;
+    console.log(`Fetching from: ${exportUrl}`);
+    
+    let response = await fetch(exportUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch from source: ${response.status}`);
+    }
+    
+    let exportData = await response.json();
+    
+    // Check if this is a Streams-style export with sub-paths
+    if (exportData.endpoints && !exportData.subtypes) {
+      const allUrl = `${exportUrl}/all`;
+      console.log(`Streams format detected, fetching from: ${allUrl}`);
+      response = await fetch(allUrl);
+      if (response.ok) {
+        exportData = await response.json();
+      }
+    }
+    
+    // Handle Streams nested subtypes format (by season)
+    let subtypesToSync: any[] = [];
+    if (exportData.subtypes) {
+      if (Array.isArray(exportData.subtypes)) {
+        subtypesToSync = exportData.subtypes;
+      } else {
+        for (const [season, types] of Object.entries(exportData.subtypes)) {
+          if (Array.isArray(types)) {
+            subtypesToSync.push(...(types as any[]).map(t => ({ ...t, season })));
+          }
+        }
+      }
+    }
+    
+    if (subtypesToSync.length > 0) {
+      const subtypeResult = await syncSubtypesFromStreams(supabase, subtypesToSync, source.app_name);
+      results.push(subtypeResult);
+    }
+
+    // Handle Streams grouped colors format OR flat array
+    let colorsToSync: any[] = [];
+    if (exportData.colors) {
+      if (Array.isArray(exportData.colors)) {
+        colorsToSync = exportData.colors;
+      } else {
+        for (const [category, colors] of Object.entries(exportData.colors)) {
+          if (Array.isArray(colors)) {
+            colorsToSync.push(...(colors as any[]).map(c => ({ ...c, category })));
+          }
+        }
+      }
+    }
+    
+    if (colorsToSync.length > 0) {
+      const colorResult = await syncColors(supabase, colorsToSync, source.app_name);
+      results.push(colorResult);
+    }
+
+    // Sync fabrics
+    if (exportData.fabrics?.length > 0) {
+      const fabricResult = await syncFabrics(supabase, exportData.fabrics, source.app_name);
+      results.push(fabricResult);
+    }
+
+    // Sync artists
+    if (exportData.artists?.length > 0) {
+      const artistResult = await syncArtists(supabase, exportData.artists, source.app_name);
+      results.push(artistResult);
+    }
+
+    // Sync training samples
+    if (exportData.training_samples?.length > 0) {
+      const sampleResult = await syncTrainingSamples(supabase, exportData.training_samples, source.app_name);
+      results.push(sampleResult);
+    }
+
+    // Update sync status and timestamp
+    await supabase
+      .from("sync_sources")
+      .update({ 
+        sync_status: "completed",
+        last_sync_at: new Date().toISOString()
+      })
+      .eq("id", source.id);
+
+  } catch (syncError) {
+    await supabase
+      .from("sync_sources")
+      .update({ sync_status: "failed" })
+      .eq("id", source.id);
+    throw syncError;
+  }
+  
+  return results;
+}
 
 // Sync helpers with upsert logic
 async function syncSubtypes(supabase: any, subtypes: any[], sourceName: string): Promise<SyncResult> {
