@@ -243,6 +243,24 @@ async function syncFromSource(supabase: any, source: any): Promise<SyncResult[]>
       results.push(sampleResult);
     }
 
+    // Sync seasons
+    if (exportData.seasons?.length > 0) {
+      const seasonResult = await syncSeasons(supabase, exportData.seasons, source.app_name);
+      results.push(seasonResult);
+    }
+
+    // Sync masterpiece paintings
+    if (exportData.paintings?.length > 0) {
+      const paintingResult = await syncPaintings(supabase, exportData.paintings, source.app_name);
+      results.push(paintingResult);
+    }
+
+    // Sync nature photos
+    if (exportData.nature_photos?.length > 0) {
+      const photoResult = await syncNaturePhotos(supabase, exportData.nature_photos, source.app_name);
+      results.push(photoResult);
+    }
+
     // Update sync status and timestamp
     await supabase
       .from("sync_sources")
@@ -498,6 +516,132 @@ async function syncTrainingSamples(supabase: any, samples: any[], sourceName: st
       }
     } catch (e) {
       result.errors.push(`Sample ${sample.photo_url}: ${e}`);
+    }
+  }
+  
+  return result;
+}
+
+async function syncSeasons(supabase: any, seasons: any[], sourceName: string): Promise<SyncResult> {
+  const result: SyncResult = { table: "seasons", inserted: 0, updated: 0, errors: [] };
+  
+  for (const season of seasons) {
+    try {
+      const slug = season.slug || season.name.toLowerCase().replace(/\s+/g, '-');
+      const { error } = await supabase
+        .from("seasons")
+        .upsert({
+          name: season.name,
+          description: season.description,
+          undertone: season.undertone,
+          characteristics: season.characteristics
+        }, { onConflict: "name" });
+      
+      if (error) {
+        result.errors.push(`Season ${season.name}: ${error.message}`);
+      } else {
+        result.updated++;
+      }
+    } catch (e) {
+      result.errors.push(`Season ${season.name}: ${e}`);
+    }
+  }
+  
+  return result;
+}
+
+async function syncPaintings(supabase: any, paintings: any[], sourceName: string): Promise<SyncResult> {
+  const result: SyncResult = { table: "masterpiece_paintings", inserted: 0, updated: 0, errors: [] };
+  
+  // Pre-fetch artists for lookup
+  const { data: artists } = await supabase.from("artists").select("id, slug, name");
+  const artistSlugMap = new Map((artists || []).map((a: any) => [a.slug, a.id]));
+  const artistNameMap = new Map((artists || []).map((a: any) => [a.name.toLowerCase(), a.id]));
+  
+  for (const painting of paintings) {
+    try {
+      // Look up artist_id
+      let artistId = painting.artist_id;
+      if (!artistId && painting.artist_slug) {
+        artistId = artistSlugMap.get(painting.artist_slug);
+      }
+      if (!artistId && painting.artist_name) {
+        artistId = artistNameMap.get(painting.artist_name.toLowerCase());
+      }
+      
+      const { error } = await supabase
+        .from("masterpiece_paintings")
+        .upsert({
+          title: painting.title,
+          artist_id: artistId,
+          artist_name: painting.artist_name,
+          year: painting.year,
+          museum: painting.museum,
+          museum_url: painting.museum_url,
+          image_url: painting.image_url,
+          local_image_path: painting.local_image_path,
+          notable_colors: painting.notable_colors,
+          color_season_affinity: painting.color_season_affinity,
+          body_type_affinity: painting.body_type_affinity,
+          why_it_matches: painting.why_it_matches
+        }, { onConflict: "title" });
+      
+      if (error) {
+        result.errors.push(`Painting ${painting.title}: ${error.message}`);
+      } else {
+        result.updated++;
+      }
+    } catch (e) {
+      result.errors.push(`Painting ${painting.title}: ${e}`);
+    }
+  }
+  
+  return result;
+}
+
+async function syncNaturePhotos(supabase: any, photos: any[], sourceName: string): Promise<SyncResult> {
+  const result: SyncResult = { table: "nature_photos", inserted: 0, updated: 0, errors: [] };
+  
+  // Pre-fetch seasons and subtypes for lookup
+  const { data: seasons } = await supabase.from("seasons").select("id, name");
+  const { data: subtypes } = await supabase.from("subtypes").select("id, slug");
+  
+  const seasonMap = new Map((seasons || []).map((s: any) => [s.name.toLowerCase(), s.id]));
+  const subtypeMap = new Map((subtypes || []).map((s: any) => [s.slug, s.id]));
+  
+  for (const photo of photos) {
+    try {
+      // Look up season_id and subtype_id
+      let seasonId = photo.season_id;
+      if (!seasonId && photo.season_name) {
+        seasonId = seasonMap.get(photo.season_name.toLowerCase());
+      }
+      
+      let subtypeId = photo.subtype_id;
+      if (!subtypeId && photo.subtype_slug) {
+        subtypeId = subtypeMap.get(photo.subtype_slug);
+      }
+      
+      const { error } = await supabase
+        .from("nature_photos")
+        .upsert({
+          title: photo.title,
+          category: photo.category || "landscape",
+          description: photo.description,
+          image_url: photo.image_url,
+          season_id: seasonId,
+          subtype_id: subtypeId,
+          color_palette: photo.color_palette,
+          mood: photo.mood
+        }, { onConflict: "image_url" });
+      
+      if (error) {
+        result.errors.push(`Photo ${photo.title || photo.image_url}: ${error.message}`);
+      } else {
+        result.updated++;
+      }
+    } catch (e) {
+      result.errors.push(`Photo ${photo.title || photo.image_url}: ${e}`);
     }
   }
   
