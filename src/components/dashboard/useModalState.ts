@@ -65,6 +65,7 @@ export function useModalState() {
     "Occasions": "occasions",
     "Style Icons": "styleIcons",
     "Face Shapes": "faceShapes",
+    "Face Recommendations": "faceShapeRecommendations",
     "Interior Designs": "interiorDesigns",
     "Seasonal Guides": "seasonalDressing",
     "Alternate Seasons": "alternateSeasons",

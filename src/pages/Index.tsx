@@ -17,7 +17,8 @@ import {
   // Lifestyle modals
   OccasionsModal, StyleIconsModal, FaceShapesModal, FaceShapeRecommendationsModal,
   InteriorDesignsModal, SeasonalDressingModal, AlternateSeasonsModal,
-  OccasionOutfitMappingsModal, StyleIconMappingsModal
+  OccasionOutfitMappingsModal, StyleIconMappingsModal,
+  CulturalClothingModal, NaturePhotosModal, EraPhotosModal, OutfitLinksModal
 } from "@/components/dashboard/DataModals";
 
 const Collapsible = CollapsiblePrimitive.Root;
@@ -495,6 +496,42 @@ const Index = () => {
     },
   });
 
+  const { data: culturalClothing } = useQuery({
+    queryKey: ["cultural_clothing"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("cultural_clothing").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: naturePhotos } = useQuery({
+    queryKey: ["nature_photos"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("nature_photos").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: eraPhotos } = useQuery({
+    queryKey: ["era_photos"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("era_photos").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: outfitLinks } = useQuery({
+    queryKey: ["outfit_links"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("outfit_links").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
   // ============= LIFESTYLE COVERAGE QUERIES =============
   const { data: occasionOutfitCoverage } = useQuery({
     queryKey: ["occasion_outfit_coverage"],
@@ -703,6 +740,34 @@ const Index = () => {
       icon: <Droplet className="h-5 w-5 text-blue-700" />,
       color: "bg-blue-100"
     },
+    { 
+      title: "Cultural Clothing", 
+      count: culturalClothing?.length || 0, 
+      description: "Traditional garments",
+      icon: <Globe className="h-5 w-5 text-orange-700" />,
+      color: "bg-orange-100"
+    },
+    { 
+      title: "Nature Photos", 
+      count: naturePhotos?.length || 0, 
+      description: "Seasonal nature imagery",
+      icon: <TreePine className="h-5 w-5 text-green-700" />,
+      color: "bg-green-100"
+    },
+    { 
+      title: "Era Photos", 
+      count: eraPhotos?.length || 0, 
+      description: "Historical fashion photos",
+      icon: <ImageIcon className="h-5 w-5 text-stone-700" />,
+      color: "bg-stone-100"
+    },
+    { 
+      title: "Outfit Links", 
+      count: outfitLinks?.length || 0, 
+      description: "Shoppable outfit links",
+      icon: <ShoppingBag className="h-5 w-5 text-pink-700" />,
+      color: "bg-pink-100"
+    },
   ];
 
   const appDataStats = [
@@ -792,6 +857,10 @@ const Index = () => {
         <AlternateSeasonsModal open={isOpen("alternateSeasons")} onOpenChange={getOpenChange("alternateSeasons")} />
         <OccasionOutfitMappingsModal open={isOpen("occasionOutfitMappings")} onOpenChange={getOpenChange("occasionOutfitMappings")} />
         <StyleIconMappingsModal open={isOpen("styleIconMappings")} onOpenChange={getOpenChange("styleIconMappings")} />
+        <CulturalClothingModal open={isOpen("culturalClothing")} onOpenChange={getOpenChange("culturalClothing")} />
+        <NaturePhotosModal open={isOpen("naturePhotos")} onOpenChange={getOpenChange("naturePhotos")} />
+        <EraPhotosModal open={isOpen("eraPhotos")} onOpenChange={getOpenChange("eraPhotos")} />
+        <OutfitLinksModal open={isOpen("outfitLinks")} onOpenChange={getOpenChange("outfitLinks")} />
         {/* Header */}
 
         <div className="text-center mb-12">
