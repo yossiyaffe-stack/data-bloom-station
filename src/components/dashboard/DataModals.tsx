@@ -1514,6 +1514,411 @@ export const MetalMappingsModal = ({ open, onOpenChange }: ModalProps) => {
   );
 };
 
+// ============= LIFESTYLE MODALS =============
+
+// Occasions Modal
+export const OccasionsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["occasions-list"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("occasions").select("*").order("name");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Occasions</DialogTitle>
+          <DialogDescription>Event categories for styling recommendations</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
+            <ul className="divide-y">
+              {data.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-medium">{item.name}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {item.category && <Badge variant="outline" className="mr-1">{item.category}</Badge>}
+                        {item.formality_level && <span>• {item.formality_level}</span>}
+                      </div>
+                      {item.description && <p className="text-sm text-muted-foreground mt-1">{item.description}</p>}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Style Icons Modal
+export const StyleIconsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["style-icons-list"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("style_icons").select("*").order("name");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Style Icons</DialogTitle>
+          <DialogDescription>Celebrity and historical style inspirations</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
+            <ul className="divide-y">
+              {data.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-medium">{item.name}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {item.profession && <span>{item.profession}</span>}
+                        {item.era && <span> • {item.era}</span>}
+                        {item.nationality && <span> • {item.nationality}</span>}
+                      </div>
+                      {item.style_signature && <p className="text-sm text-muted-foreground mt-1 italic">"{item.style_signature}"</p>}
+                    </div>
+                    {item.wikipedia_url && (
+                      <a href={item.wikipedia_url} target="_blank" rel="noreferrer" className="text-xs underline text-muted-foreground">Wiki</a>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Face Shapes Modal
+export const FaceShapesModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["face-shapes-list"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("face_shapes").select("*").order("name");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Face Shapes</DialogTitle>
+          <DialogDescription>Face shape classifications with styling recommendations</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
+            <ul className="divide-y">
+              {data.map((item) => (
+                <li key={item.id} className="p-4 hover:bg-muted/50">
+                  <div className="font-medium text-lg">{item.name}</div>
+                  <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
+                  {item.characteristics && Array.isArray(item.characteristics) && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {(item.characteristics as string[]).map((c, i) => (
+                        <Badge key={i} variant="outline" className="text-xs">{c}</Badge>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Face Shape Recommendations Modal
+export const FaceShapeRecommendationsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["face-shape-recommendations-list"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("face_shape_recommendations")
+        .select("*, face_shapes(name)")
+        .order("category");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Group by face shape
+  const grouped = data?.reduce((acc, item) => {
+    const shapeName = (item.face_shapes as { name: string } | null)?.name || "Unknown";
+    if (!acc[shapeName]) acc[shapeName] = [];
+    acc[shapeName].push(item);
+    return acc;
+  }, {} as Record<string, typeof data>);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-4xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Face Shape Recommendations</DialogTitle>
+          <DialogDescription>Glasses, jewelry, necklines, and hairstyle recommendations by face shape</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
+            <div className="space-y-6 p-1">
+              {Object.entries(grouped || {}).map(([shapeName, recs]) => (
+                <div key={shapeName} className="border rounded-lg p-4">
+                  <h3 className="font-semibold text-lg mb-3">{shapeName} Face</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {(recs as typeof data)?.map((rec) => (
+                      <div key={rec.id} className="bg-muted/30 rounded p-3">
+                        <Badge className="mb-2">{rec.category}</Badge>
+                        <p className="text-sm font-medium">{rec.recommendation}</p>
+                        {rec.why_it_works && <p className="text-xs text-muted-foreground mt-1">Why: {rec.why_it_works}</p>}
+                        {rec.avoid && <p className="text-xs text-red-600 mt-1">Avoid: {rec.avoid}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Interior Designs Modal
+export const InteriorDesignsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["interior-designs-list"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("interior_designs").select("*, subtypes(name)").order("title");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Interior Designs</DialogTitle>
+          <DialogDescription>Home styling recommendations by subtype</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
+            <ul className="divide-y">
+              {data.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="font-medium">{item.title || item.style_name}</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {item.room_type && <Badge variant="outline" className="mr-1">{item.room_type}</Badge>}
+                    {item.subtypes && <span>• For: {(item.subtypes as { name: string }).name}</span>}
+                  </div>
+                  {item.description && <p className="text-sm text-muted-foreground mt-1">{item.description}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Seasonal Dressing Guides Modal
+export const SeasonalDressingModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["seasonal-dressing-list"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("seasonal_dressing_guides").select("*, subtypes(name)").order("weather_season");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Seasonal Dressing Guides</DialogTitle>
+          <DialogDescription>Weather-based styling recommendations</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
+            <ul className="divide-y">
+              {data.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-center gap-2">
+                    <Badge>{item.weather_season}</Badge>
+                    {item.subtypes && <span className="text-sm">• {(item.subtypes as { name: string }).name}</span>}
+                  </div>
+                  {item.layering_advice && <p className="text-sm text-muted-foreground mt-2">{item.layering_advice}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Alternate Seasons Modal
+export const AlternateSeasonsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["alternate-seasons-list"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("alternate_seasons")
+        .select("*, primary:subtypes!alternate_seasons_primary_subtype_id_fkey(name), alternate:subtypes!alternate_seasons_alternate_subtype_id_fkey(name)")
+        .order("created_at");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Alternate Seasons</DialogTitle>
+          <DialogDescription>Dual-season mappings for overlapping subtypes</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
+            <ul className="divide-y">
+              {data.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="outline">{(item.primary as { name: string } | null)?.name}</Badge>
+                    <span>→</span>
+                    <Badge variant="secondary">{(item.alternate as { name: string } | null)?.name}</Badge>
+                    {item.overlap_percentage && <span className="text-xs text-muted-foreground ml-2">{item.overlap_percentage}% overlap</span>}
+                  </div>
+                  {item.when_to_use_alternate && <p className="text-sm text-muted-foreground">{item.when_to_use_alternate}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Occasion Outfit Mappings Modal
+export const OccasionOutfitMappingsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["occasion-outfit-mappings"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("subtype_occasion_outfits")
+        .select("*, subtypes(name), occasions(name)")
+        .order("created_at");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Occasion Outfit Mappings</DialogTitle>
+          <DialogDescription>Subtype-specific outfit recommendations per occasion</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
+            <ul className="divide-y">
+              {data.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge>{(item.subtypes as { name: string } | null)?.name}</Badge>
+                    <span>•</span>
+                    <Badge variant="outline">{(item.occasions as { name: string } | null)?.name}</Badge>
+                  </div>
+                  {item.outfit_description && <p className="text-sm text-muted-foreground">{item.outfit_description}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Style Icon Mappings Modal
+export const StyleIconMappingsModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["style-icon-mappings"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("subtype_style_icons")
+        .select("*, subtypes(name), style_icons(name, profession)")
+        .order("subtype_id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Style Icon Mappings</DialogTitle>
+          <DialogDescription>Celebrity inspirations linked to subtypes</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
+            <ul className="divide-y">
+              {data.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-center gap-2">
+                    <Badge>{(item.subtypes as { name: string } | null)?.name}</Badge>
+                    <span>→</span>
+                    <span className="font-medium">{(item.style_icons as { name: string; profession: string } | null)?.name}</span>
+                    {(item.style_icons as { name: string; profession: string } | null)?.profession && (
+                      <span className="text-xs text-muted-foreground">({(item.style_icons as { name: string; profession: string }).profession})</span>
+                    )}
+                  </div>
+                  {item.notes && <p className="text-sm text-muted-foreground mt-1">{item.notes}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 // Helper components
 const LoadingSkeleton = () => (
   <div className="p-4 space-y-2">
