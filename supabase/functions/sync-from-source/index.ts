@@ -1,0 +1,320 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+interface SyncSource {
+  id: string;
+  app_name: string;
+  app_url: string;
+  export_endpoint: string;
+  last_sync_at: string | null;
+  sync_status: string;
+}
+
+interface SyncResult {
+  table: string;
+  inserted: number;
+  updated: number;
+  errors: string[];
+}
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const url = new URL(req.url);
+    const sourceId = url.searchParams.get("source_id");
+    const action = url.searchParams.get("action") || "sync";
+
+    // List all registered sources
+    if (action === "list") {
+      const { data: sources, error } = await supabase
+        .from("sync_sources")
+        .select("*")
+        .order("app_name");
+      
+      if (error) throw error;
+      return new Response(
+        JSON.stringify({ success: true, sources }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Register a new source
+    if (action === "register" && req.method === "POST") {
+      const body = await req.json();
+      const { app_name, app_url, export_endpoint } = body;
+      
+      if (!app_name || !app_url) {
+        throw new Error("app_name and app_url are required");
+      }
+
+      const { data, error } = await supabase
+        .from("sync_sources")
+        .upsert({
+          app_name,
+          app_url,
+          export_endpoint: export_endpoint || "/functions/v1/methodology-export",
+          sync_status: "registered"
+        }, { onConflict: "app_name" })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return new Response(
+        JSON.stringify({ success: true, source: data }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Sync from a specific source
+    if (action === "sync") {
+      if (!sourceId) {
+        throw new Error("source_id is required for sync action");
+      }
+
+      // Get the source details
+      const { data: source, error: sourceError } = await supabase
+        .from("sync_sources")
+        .select("*")
+        .eq("id", sourceId)
+        .single();
+      
+      if (sourceError || !source) {
+        throw new Error(`Source not found: ${sourceId}`);
+      }
+
+      // Update status to syncing
+      await supabase
+        .from("sync_sources")
+        .update({ sync_status: "syncing" })
+        .eq("id", sourceId);
+
+      const results: SyncResult[] = [];
+      
+      try {
+        // Fetch data from source app's export endpoint
+        const exportUrl = `${source.app_url}${source.export_endpoint}`;
+        console.log(`Fetching from: ${exportUrl}`);
+        
+        const response = await fetch(exportUrl);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch from source: ${response.status}`);
+        }
+        
+        const exportData = await response.json();
+        
+        // Sync subtypes
+        if (exportData.subtypes?.length > 0) {
+          const subtypeResult = await syncSubtypes(supabase, exportData.subtypes, source.app_name);
+          results.push(subtypeResult);
+        }
+
+        // Sync colors
+        if (exportData.colors?.length > 0) {
+          const colorResult = await syncColors(supabase, exportData.colors, source.app_name);
+          results.push(colorResult);
+        }
+
+        // Sync fabrics
+        if (exportData.fabrics?.length > 0) {
+          const fabricResult = await syncFabrics(supabase, exportData.fabrics, source.app_name);
+          results.push(fabricResult);
+        }
+
+        // Sync artists
+        if (exportData.artists?.length > 0) {
+          const artistResult = await syncArtists(supabase, exportData.artists, source.app_name);
+          results.push(artistResult);
+        }
+
+        // Update sync status and timestamp
+        await supabase
+          .from("sync_sources")
+          .update({ 
+            sync_status: "completed",
+            last_sync_at: new Date().toISOString()
+          })
+          .eq("id", sourceId);
+
+      } catch (syncError) {
+        await supabase
+          .from("sync_sources")
+          .update({ sync_status: "failed" })
+          .eq("id", sourceId);
+        throw syncError;
+      }
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          source: source.app_name,
+          results,
+          synced_at: new Date().toISOString()
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    throw new Error(`Unknown action: ${action}`);
+
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Sync error:", message);
+    return new Response(
+      JSON.stringify({ success: false, error: message }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+});
+
+// Sync helpers with upsert logic
+async function syncSubtypes(supabase: any, subtypes: any[], sourceName: string): Promise<SyncResult> {
+  const result: SyncResult = { table: "subtypes", inserted: 0, updated: 0, errors: [] };
+  
+  for (const subtype of subtypes) {
+    try {
+      const { error } = await supabase
+        .from("subtypes")
+        .upsert({
+          slug: subtype.slug,
+          name: subtype.name,
+          beauty_statement: subtype.beauty_statement,
+          unique_features: subtype.unique_features,
+          effects: subtype.effects,
+          style_dos: subtype.style_dos,
+          style_donts: subtype.style_donts,
+          color_combinations: subtype.color_combinations,
+          designers: subtype.designers,
+          eras: subtype.eras,
+          art_references: subtype.art_references,
+          jewelry_styles: subtype.jewelry_styles,
+          home_decor: subtype.home_decor,
+          bridging_to: subtype.bridging_to,
+          source_app: sourceName,
+          synced_at: new Date().toISOString()
+        }, { onConflict: "slug" });
+      
+      if (error) {
+        result.errors.push(`Subtype ${subtype.slug}: ${error.message}`);
+      } else {
+        result.updated++;
+      }
+    } catch (e) {
+      result.errors.push(`Subtype ${subtype.slug}: ${e}`);
+    }
+  }
+  
+  return result;
+}
+
+async function syncColors(supabase: any, colors: any[], sourceName: string): Promise<SyncResult> {
+  const result: SyncResult = { table: "colors", inserted: 0, updated: 0, errors: [] };
+  
+  for (const color of colors) {
+    try {
+      const { error } = await supabase
+        .from("colors")
+        .upsert({
+          slug: color.slug,
+          name: color.name,
+          hex: color.hex,
+          category: color.category || "neutral",
+          warmth: color.warmth,
+          hsl_h: color.hsl_h,
+          hsl_s: color.hsl_s,
+          hsl_l: color.hsl_l,
+          seasons: color.seasons,
+          source_app: sourceName,
+          synced_at: new Date().toISOString()
+        }, { onConflict: "slug" });
+      
+      if (error) {
+        result.errors.push(`Color ${color.slug}: ${error.message}`);
+      } else {
+        result.updated++;
+      }
+    } catch (e) {
+      result.errors.push(`Color ${color.slug}: ${e}`);
+    }
+  }
+  
+  return result;
+}
+
+async function syncFabrics(supabase: any, fabrics: any[], sourceName: string): Promise<SyncResult> {
+  const result: SyncResult = { table: "fabrics", inserted: 0, updated: 0, errors: [] };
+  
+  for (const fabric of fabrics) {
+    try {
+      const { error } = await supabase
+        .from("fabrics")
+        .upsert({
+          slug: fabric.slug,
+          name: fabric.name,
+          category: fabric.category || "natural",
+          characteristics: fabric.characteristics,
+          keywords: fabric.keywords,
+          formality_level: fabric.formality_level,
+          care_level: fabric.care_level,
+          quality_notes: fabric.quality_notes,
+          source_app: sourceName,
+          synced_at: new Date().toISOString()
+        }, { onConflict: "slug" });
+      
+      if (error) {
+        result.errors.push(`Fabric ${fabric.slug}: ${error.message}`);
+      } else {
+        result.updated++;
+      }
+    } catch (e) {
+      result.errors.push(`Fabric ${fabric.slug}: ${e}`);
+    }
+  }
+  
+  return result;
+}
+
+async function syncArtists(supabase: any, artists: any[], sourceName: string): Promise<SyncResult> {
+  const result: SyncResult = { table: "artists", inserted: 0, updated: 0, errors: [] };
+  
+  for (const artist of artists) {
+    try {
+      const { error } = await supabase
+        .from("artists")
+        .upsert({
+          slug: artist.slug,
+          name: artist.name,
+          era: artist.era,
+          style: artist.style,
+          color_characteristics: artist.color_characteristics,
+          notable_works: artist.notable_works,
+          seasons_affinity: artist.seasons_affinity,
+          wikipedia_url: artist.wikipedia_url,
+          source_app: sourceName,
+          synced_at: new Date().toISOString()
+        }, { onConflict: "slug" });
+      
+      if (error) {
+        result.errors.push(`Artist ${artist.slug}: ${error.message}`);
+      } else {
+        result.updated++;
+      }
+    } catch (e) {
+      result.errors.push(`Artist ${artist.slug}: ${e}`);
+    }
+  }
+  
+  return result;
+}
