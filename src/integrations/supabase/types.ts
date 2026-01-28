@@ -96,6 +96,57 @@ export type Database = {
           },
         ]
       }
+      alternate_seasons: {
+        Row: {
+          alternate_subtype_id: string | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          overlap_percentage: number | null
+          primary_subtype_id: string | null
+          shared_characteristics: Json | null
+          transition_tips: string | null
+          when_to_use_alternate: string | null
+        }
+        Insert: {
+          alternate_subtype_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          overlap_percentage?: number | null
+          primary_subtype_id?: string | null
+          shared_characteristics?: Json | null
+          transition_tips?: string | null
+          when_to_use_alternate?: string | null
+        }
+        Update: {
+          alternate_subtype_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          overlap_percentage?: number | null
+          primary_subtype_id?: string | null
+          shared_characteristics?: Json | null
+          transition_tips?: string | null
+          when_to_use_alternate?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alternate_seasons_alternate_subtype_id_fkey"
+            columns: ["alternate_subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alternate_seasons_primary_subtype_id_fkey"
+            columns: ["primary_subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artists: {
         Row: {
           color_characteristics: string | null
@@ -282,6 +333,54 @@ export type Database = {
         }
         Relationships: []
       }
+      cultural_clothing: {
+        Row: {
+          created_at: string | null
+          culture: string | null
+          description: string | null
+          fabrics_used: Json | null
+          id: string
+          image_url: string | null
+          name: string
+          occasions_worn: Json | null
+          region: string | null
+          season_affinity: Json | null
+          slug: string
+          time_period: string | null
+          traditional_colors: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          culture?: string | null
+          description?: string | null
+          fabrics_used?: Json | null
+          id?: string
+          image_url?: string | null
+          name: string
+          occasions_worn?: Json | null
+          region?: string | null
+          season_affinity?: Json | null
+          slug: string
+          time_period?: string | null
+          traditional_colors?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          culture?: string | null
+          description?: string | null
+          fabrics_used?: Json | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          occasions_worn?: Json | null
+          region?: string | null
+          season_affinity?: Json | null
+          slug?: string
+          time_period?: string | null
+          traditional_colors?: Json | null
+        }
+        Relationships: []
+      }
       designers: {
         Row: {
           brand_style: string | null
@@ -323,6 +422,50 @@ export type Database = {
           website_url?: string | null
         }
         Relationships: []
+      }
+      era_photos: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          era_id: string | null
+          id: string
+          image_url: string | null
+          notable_style_elements: Json | null
+          source: string | null
+          title: string | null
+          year_approximate: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          era_id?: string | null
+          id?: string
+          image_url?: string | null
+          notable_style_elements?: Json | null
+          source?: string | null
+          title?: string | null
+          year_approximate?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          era_id?: string | null
+          id?: string
+          image_url?: string | null
+          notable_style_elements?: Json | null
+          source?: string | null
+          title?: string | null
+          year_approximate?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "era_photos_era_id_fkey"
+            columns: ["era_id"]
+            isOneToOne: false
+            referencedRelation: "historical_eras"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       fabrics: {
         Row: {
@@ -366,6 +509,80 @@ export type Database = {
           slug?: string
           source_app?: string | null
           synced_at?: string | null
+        }
+        Relationships: []
+      }
+      face_shape_recommendations: {
+        Row: {
+          avoid: string | null
+          category: string
+          created_at: string | null
+          face_shape_id: string | null
+          id: string
+          image_url: string | null
+          item_type: string | null
+          recommendation: string
+          why_it_works: string | null
+        }
+        Insert: {
+          avoid?: string | null
+          category: string
+          created_at?: string | null
+          face_shape_id?: string | null
+          id?: string
+          image_url?: string | null
+          item_type?: string | null
+          recommendation: string
+          why_it_works?: string | null
+        }
+        Update: {
+          avoid?: string | null
+          category?: string
+          created_at?: string | null
+          face_shape_id?: string | null
+          id?: string
+          image_url?: string | null
+          item_type?: string | null
+          recommendation?: string
+          why_it_works?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "face_shape_recommendations_face_shape_id_fkey"
+            columns: ["face_shape_id"]
+            isOneToOne: false
+            referencedRelation: "face_shapes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      face_shapes: {
+        Row: {
+          characteristics: Json | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          slug: string
+          visual_traits: Json | null
+        }
+        Insert: {
+          characteristics?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+          visual_traits?: Json | null
+        }
+        Update: {
+          characteristics?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          visual_traits?: Json | null
         }
         Relationships: []
       }
@@ -449,6 +666,59 @@ export type Database = {
           synced_at?: string | null
         }
         Relationships: []
+      }
+      interior_designs: {
+        Row: {
+          accent_ideas: Json | null
+          color_palette: Json | null
+          created_at: string | null
+          description: string | null
+          fabric_suggestions: Json | null
+          furniture_styles: Json | null
+          id: string
+          image_url: string | null
+          room_type: string | null
+          style_name: string | null
+          subtype_id: string | null
+          title: string | null
+        }
+        Insert: {
+          accent_ideas?: Json | null
+          color_palette?: Json | null
+          created_at?: string | null
+          description?: string | null
+          fabric_suggestions?: Json | null
+          furniture_styles?: Json | null
+          id?: string
+          image_url?: string | null
+          room_type?: string | null
+          style_name?: string | null
+          subtype_id?: string | null
+          title?: string | null
+        }
+        Update: {
+          accent_ideas?: Json | null
+          color_palette?: Json | null
+          created_at?: string | null
+          description?: string | null
+          fabric_suggestions?: Json | null
+          furniture_styles?: Json | null
+          id?: string
+          image_url?: string | null
+          room_type?: string | null
+          style_name?: string | null
+          subtype_id?: string | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interior_designs_subtype_id_fkey"
+            columns: ["subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       makeup_recommendations: {
         Row: {
@@ -625,6 +895,163 @@ export type Database = {
         }
         Relationships: []
       }
+      nature_photos: {
+        Row: {
+          category: string
+          color_palette: Json | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          mood: string | null
+          season_id: string | null
+          subtype_id: string | null
+          title: string | null
+        }
+        Insert: {
+          category: string
+          color_palette?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          mood?: string | null
+          season_id?: string | null
+          subtype_id?: string | null
+          title?: string | null
+        }
+        Update: {
+          category?: string
+          color_palette?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          mood?: string | null
+          season_id?: string | null
+          subtype_id?: string | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nature_photos_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nature_photos_subtype_id_fkey"
+            columns: ["subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      occasions: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          formality_level: string | null
+          id: string
+          name: string
+          slug: string
+          styling_principles: Json | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          formality_level?: string | null
+          id?: string
+          name: string
+          slug: string
+          styling_principles?: Json | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          formality_level?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          styling_principles?: Json | null
+        }
+        Relationships: []
+      }
+      outfit_links: {
+        Row: {
+          body_type_id: string | null
+          created_at: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          occasion_id: string | null
+          price_tier: string | null
+          product_name: string | null
+          product_url: string | null
+          retailer: string | null
+          size_category: string | null
+          size_value: string | null
+          subtype_id: string | null
+        }
+        Insert: {
+          body_type_id?: string | null
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          occasion_id?: string | null
+          price_tier?: string | null
+          product_name?: string | null
+          product_url?: string | null
+          retailer?: string | null
+          size_category?: string | null
+          size_value?: string | null
+          subtype_id?: string | null
+        }
+        Update: {
+          body_type_id?: string | null
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          occasion_id?: string | null
+          price_tier?: string | null
+          product_name?: string | null
+          product_url?: string | null
+          retailer?: string | null
+          size_category?: string | null
+          size_value?: string | null
+          subtype_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outfit_links_body_type_id_fkey"
+            columns: ["body_type_id"]
+            isOneToOne: false
+            referencedRelation: "body_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "outfit_links_occasion_id_fkey"
+            columns: ["occasion_id"]
+            isOneToOne: false
+            referencedRelation: "occasions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "outfit_links_subtype_id_fkey"
+            columns: ["subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       photo_analyses: {
         Row: {
           ai_prediction: Json | null
@@ -743,6 +1170,53 @@ export type Database = {
           },
         ]
       }
+      seasonal_dressing_guides: {
+        Row: {
+          avoid: Json | null
+          color_emphasis: Json | null
+          created_at: string | null
+          dressing_tips: Json | null
+          fabric_weights: Json | null
+          id: string
+          key_pieces: Json | null
+          layering_advice: string | null
+          subtype_id: string | null
+          weather_season: string
+        }
+        Insert: {
+          avoid?: Json | null
+          color_emphasis?: Json | null
+          created_at?: string | null
+          dressing_tips?: Json | null
+          fabric_weights?: Json | null
+          id?: string
+          key_pieces?: Json | null
+          layering_advice?: string | null
+          subtype_id?: string | null
+          weather_season: string
+        }
+        Update: {
+          avoid?: Json | null
+          color_emphasis?: Json | null
+          created_at?: string | null
+          dressing_tips?: Json | null
+          fabric_weights?: Json | null
+          id?: string
+          key_pieces?: Json | null
+          layering_advice?: string | null
+          subtype_id?: string | null
+          weather_season?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seasonal_dressing_guides_subtype_id_fkey"
+            columns: ["subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seasons: {
         Row: {
           characteristics: Json | null
@@ -852,6 +1326,95 @@ export type Database = {
             columns: ["client_profile_id"]
             isOneToOne: false
             referencedRelation: "client_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      style_icons: {
+        Row: {
+          birth_year: string | null
+          created_at: string | null
+          era: string | null
+          id: string
+          image_url: string | null
+          is_celebrity: boolean | null
+          name: string
+          nationality: string | null
+          profession: string | null
+          slug: string
+          style_signature: string | null
+          why_they_match: string | null
+          wikipedia_url: string | null
+        }
+        Insert: {
+          birth_year?: string | null
+          created_at?: string | null
+          era?: string | null
+          id?: string
+          image_url?: string | null
+          is_celebrity?: boolean | null
+          name: string
+          nationality?: string | null
+          profession?: string | null
+          slug: string
+          style_signature?: string | null
+          why_they_match?: string | null
+          wikipedia_url?: string | null
+        }
+        Update: {
+          birth_year?: string | null
+          created_at?: string | null
+          era?: string | null
+          id?: string
+          image_url?: string | null
+          is_celebrity?: boolean | null
+          name?: string
+          nationality?: string | null
+          profession?: string | null
+          slug?: string
+          style_signature?: string | null
+          why_they_match?: string | null
+          wikipedia_url?: string | null
+        }
+        Relationships: []
+      }
+      subtype_accent_colors: {
+        Row: {
+          best_worn_as: string | null
+          color_hex: string
+          color_name: string
+          created_at: string | null
+          id: string
+          is_signature: boolean | null
+          subtype_id: string | null
+          usage_notes: string | null
+        }
+        Insert: {
+          best_worn_as?: string | null
+          color_hex: string
+          color_name: string
+          created_at?: string | null
+          id?: string
+          is_signature?: boolean | null
+          subtype_id?: string | null
+          usage_notes?: string | null
+        }
+        Update: {
+          best_worn_as?: string | null
+          color_hex?: string
+          color_name?: string
+          created_at?: string | null
+          id?: string
+          is_signature?: boolean | null
+          subtype_id?: string | null
+          usage_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subtype_accent_colors_subtype_id_fkey"
+            columns: ["subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
             referencedColumns: ["id"]
           },
         ]
@@ -1123,6 +1686,63 @@ export type Database = {
           },
         ]
       }
+      subtype_occasion_outfits: {
+        Row: {
+          accessories: Json | null
+          colors_to_emphasize: Json | null
+          created_at: string | null
+          fabrics_recommended: Json | null
+          id: string
+          image_url: string | null
+          key_pieces: Json | null
+          occasion_id: string | null
+          outfit_description: string | null
+          styling_tips: Json | null
+          subtype_id: string | null
+        }
+        Insert: {
+          accessories?: Json | null
+          colors_to_emphasize?: Json | null
+          created_at?: string | null
+          fabrics_recommended?: Json | null
+          id?: string
+          image_url?: string | null
+          key_pieces?: Json | null
+          occasion_id?: string | null
+          outfit_description?: string | null
+          styling_tips?: Json | null
+          subtype_id?: string | null
+        }
+        Update: {
+          accessories?: Json | null
+          colors_to_emphasize?: Json | null
+          created_at?: string | null
+          fabrics_recommended?: Json | null
+          id?: string
+          image_url?: string | null
+          key_pieces?: Json | null
+          occasion_id?: string | null
+          outfit_description?: string | null
+          styling_tips?: Json | null
+          subtype_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subtype_occasion_outfits_occasion_id_fkey"
+            columns: ["occasion_id"]
+            isOneToOne: false
+            referencedRelation: "occasions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subtype_occasion_outfits_subtype_id_fkey"
+            columns: ["subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subtype_prints: {
         Row: {
           id: string
@@ -1155,6 +1775,42 @@ export type Database = {
           },
           {
             foreignKeyName: "subtype_prints_subtype_id_fkey"
+            columns: ["subtype_id"]
+            isOneToOne: false
+            referencedRelation: "subtypes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subtype_style_icons: {
+        Row: {
+          id: string
+          notes: string | null
+          style_icon_id: string | null
+          subtype_id: string | null
+        }
+        Insert: {
+          id?: string
+          notes?: string | null
+          style_icon_id?: string | null
+          subtype_id?: string | null
+        }
+        Update: {
+          id?: string
+          notes?: string | null
+          style_icon_id?: string | null
+          subtype_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subtype_style_icons_style_icon_id_fkey"
+            columns: ["style_icon_id"]
+            isOneToOne: false
+            referencedRelation: "style_icons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subtype_style_icons_subtype_id_fkey"
             columns: ["subtype_id"]
             isOneToOne: false
             referencedRelation: "subtypes"
