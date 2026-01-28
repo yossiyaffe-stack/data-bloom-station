@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle, Crown, Grid3X3, User, Eye, SwatchBook, History, AlertTriangle, CheckCircle2, XCircle, AlertCircle, ChevronDown, CalendarDays, Star, Scan, Home, Thermometer, Repeat, Globe, TreePine, ImageIcon, ShoppingBag, Droplet } from "lucide-react";
+import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle, Crown, Grid3X3, User, Eye, SwatchBook, History, AlertTriangle, CheckCircle2, XCircle, AlertCircle, ChevronDown, CalendarDays, Star, Scan, Home, Thermometer, Repeat, Globe, TreePine, ImageIcon, ShoppingBag, Droplet, Layers } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import * as CollapsiblePrimitive from "@radix-ui/react-collapsible";
 import { useModalState } from "@/components/dashboard/useModalState";
 import {
@@ -18,7 +19,9 @@ import {
   OccasionsModal, StyleIconsModal, FaceShapesModal, FaceShapeRecommendationsModal,
   InteriorDesignsModal, SeasonalDressingModal, AlternateSeasonsModal,
   OccasionOutfitMappingsModal, StyleIconMappingsModal,
-  CulturalClothingModal, NaturePhotosModal, EraPhotosModal, OutfitLinksModal
+  CulturalClothingModal, NaturePhotosModal, EraPhotosModal, OutfitLinksModal,
+  // Phase management
+  PhaseAssignmentModal
 } from "@/components/dashboard/DataModals";
 
 const Collapsible = CollapsiblePrimitive.Root;
@@ -861,6 +864,7 @@ const Index = () => {
         <NaturePhotosModal open={isOpen("naturePhotos")} onOpenChange={getOpenChange("naturePhotos")} />
         <EraPhotosModal open={isOpen("eraPhotos")} onOpenChange={getOpenChange("eraPhotos")} />
         <OutfitLinksModal open={isOpen("outfitLinks")} onOpenChange={getOpenChange("outfitLinks")} />
+        <PhaseAssignmentModal open={isOpen("phaseAssignment")} onOpenChange={getOpenChange("phaseAssignment")} />
         {/* Header */}
 
         <div className="text-center mb-12">
@@ -880,6 +884,14 @@ const Index = () => {
               By {String(methodologyAuthor).replace(/"/g, '')} • Version {String(version || "1.0").replace(/"/g, '')}
             </p>
           )}
+          <Button 
+            variant="outline" 
+            className="mt-4" 
+            onClick={() => openModalHandler("phaseAssignment")}
+          >
+            <Layers className="h-4 w-4 mr-2" />
+            Manage Subtype Phases
+          </Button>
         </div>
 
         {/* Attention Needed Section */}

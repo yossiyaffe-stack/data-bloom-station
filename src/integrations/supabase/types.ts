@@ -1170,6 +1170,41 @@ export type Database = {
           },
         ]
       }
+      season_phases: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_order: number
+          id: string
+          name: string
+          season_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          name: string
+          season_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          name?: string
+          season_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "season_phases_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seasonal_dressing_guides: {
         Row: {
           avoid: Json | null
@@ -1832,6 +1867,7 @@ export type Database = {
           id: string
           jewelry_styles: Json | null
           name: string
+          phase_id: string | null
           season_id: string | null
           slug: string
           source_app: string | null
@@ -1854,6 +1890,7 @@ export type Database = {
           id?: string
           jewelry_styles?: Json | null
           name: string
+          phase_id?: string | null
           season_id?: string | null
           slug: string
           source_app?: string | null
@@ -1876,6 +1913,7 @@ export type Database = {
           id?: string
           jewelry_styles?: Json | null
           name?: string
+          phase_id?: string | null
           season_id?: string | null
           slug?: string
           source_app?: string | null
@@ -1886,6 +1924,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "subtypes_phase_id_fkey"
+            columns: ["phase_id"]
+            isOneToOne: false
+            referencedRelation: "season_phases"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "subtypes_season_id_fkey"
             columns: ["season_id"]

@@ -5,7 +5,7 @@ export type ModalKey =
   | "artists" | "eras" | "paintings" | "sephirot" | "makeup" 
   | "metals" | "designers" | "prints" | "bodyTypes"
   | "completionStatus" | "junctionMappings"
-  | "seasonDetail"
+  | "seasonDetail" | "phaseAssignment"
   | "makeupMappings" | "fabricMappings" | "eraMappings" 
   | "designerMappings" | "gemstoneMappings" | "artistMappings" | "metalMappings"
   // Lifestyle tables

@@ -11,6 +11,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+// Re-export the PhaseAssignment modal
+export { PhaseAssignmentModal } from "./PhaseAssignment";
+
 interface ModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
