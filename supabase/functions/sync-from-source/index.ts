@@ -325,14 +325,32 @@ async function syncSubtypes(supabase: any, subtypes: any[], sourceName: string):
 async function syncSubtypesFromStreams(supabase: any, subtypes: any[], sourceName: string): Promise<SyncResult> {
   const result: SyncResult = { table: "subtypes", inserted: 0, updated: 0, errors: [] };
   
+  // Pre-fetch seasons for lookup
+  const { data: seasons } = await supabase.from("seasons").select("id, name");
+  const seasonMap = new Map((seasons || []).map((s: any) => [s.name.toLowerCase(), s.id]));
+  
   for (const subtype of subtypes) {
     try {
       const slug = subtype.id || subtype.slug;
+      
+      // Resolve season_id from season name, slug suffix, or explicit season field
+      let seasonId = subtype.season_id;
+      if (!seasonId && subtype.season) {
+        seasonId = seasonMap.get(subtype.season.toLowerCase());
+      }
+      // Try to extract season from slug (e.g., "amber-autumn" -> "autumn")
+      if (!seasonId && slug) {
+        const slugParts = slug.split('-');
+        const lastPart = slugParts[slugParts.length - 1];
+        seasonId = seasonMap.get(lastPart.toLowerCase());
+      }
+      
       const { error } = await supabase
         .from("subtypes")
         .upsert({
           slug,
           name: subtype.name,
+          season_id: seasonId,
           beauty_statement: subtype.beautyStatement || subtype.beauty_statement,
           unique_features: subtype.uniqueFeatures || subtype.unique_features,
           effects: subtype.effects,
