@@ -187,21 +187,38 @@ export const SeasonDetailModal = ({ open, onOpenChange, seasonId }: SeasonDetail
 
               {/* Subtypes */}
               <div>
-                <h4 className="font-semibold mb-3">Subtypes ({subtypes?.length || 0})</h4>
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  Subtypes ({subtypes?.length || 0})
+                  {subtypes && subtypes.filter(s => !s.beauty_statement && !s.unique_features).length > 0 && (
+                    <Badge variant="destructive" className="text-xs">
+                      {subtypes.filter(s => !s.beauty_statement && !s.unique_features).length} missing definitions
+                    </Badge>
+                  )}
+                </h4>
                 {subtypes && subtypes.length > 0 ? (
                   <ul className="divide-y border rounded-lg">
-                    {subtypes.map((subtype) => (
-                      <li key={subtype.id} className="p-4 hover:bg-muted/50">
-                        <div className="font-medium">{subtype.name}</div>
-                        <code className="text-xs text-muted-foreground font-mono">{subtype.slug}</code>
-                        {subtype.beauty_statement && (
-                          <p className="text-sm text-muted-foreground mt-2 italic">"{subtype.beauty_statement}"</p>
-                        )}
-                        {subtype.unique_features && (
-                          <p className="text-sm text-muted-foreground mt-1">{subtype.unique_features}</p>
-                        )}
-                      </li>
-                    ))}
+                    {subtypes.map((subtype) => {
+                      const incomplete = !subtype.beauty_statement && !subtype.unique_features;
+                      return (
+                        <li key={subtype.id} className={`p-4 hover:bg-muted/50 ${incomplete ? "bg-destructive/5" : ""}`}>
+                          <div className="font-medium flex items-center gap-2">
+                            {subtype.name}
+                            {incomplete && (
+                              <Badge variant="outline" className="text-[10px] border-destructive/50 text-destructive">
+                                Needs definition
+                              </Badge>
+                            )}
+                          </div>
+                          <code className="text-xs text-muted-foreground font-mono">{subtype.slug}</code>
+                          {subtype.beauty_statement && (
+                            <p className="text-sm text-muted-foreground mt-2 italic">"{subtype.beauty_statement}"</p>
+                          )}
+                          {subtype.unique_features && (
+                            <p className="text-sm text-muted-foreground mt-1">{subtype.unique_features}</p>
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 ) : (
                   <p className="text-sm text-muted-foreground">No subtypes found for this season.</p>
@@ -215,39 +232,70 @@ export const SeasonDetailModal = ({ open, onOpenChange, seasonId }: SeasonDetail
   );
 };
 
+// Helper to check if a subtype is missing key definitions
+const isSubtypeIncomplete = (subtype: { 
+  beauty_statement: string | null; 
+  unique_features: string | null;
+}) => {
+  return !subtype.beauty_statement && !subtype.unique_features;
+};
+
 // Subtypes Modal
 export const SubtypesModal = ({ open, onOpenChange }: ModalProps) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["subtypes-list"],
     enabled: open,
     queryFn: async () => {
-      const { data, error } = await supabase.from("subtypes").select("id, name, slug, seasons(name)").order("name");
+      const { data, error } = await supabase
+        .from("subtypes")
+        .select("id, name, slug, beauty_statement, unique_features, effects, seasons(name)")
+        .order("name");
       if (error) throw error;
       return data;
     },
   });
 
+  const incompleteCount = data?.filter(isSubtypeIncomplete).length || 0;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[85vh]">
         <DialogHeader>
-          <DialogTitle>Subtypes</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            Subtypes
+            {incompleteCount > 0 && (
+              <Badge variant="destructive" className="text-xs">{incompleteCount} missing definitions</Badge>
+            )}
+          </DialogTitle>
           <DialogDescription>Unique color personalities</DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-[60vh]">
           {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
             <ul className="divide-y">
-              {data.map((item) => (
-                <li key={item.id} className="p-3 hover:bg-muted/50">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="font-medium">{item.name}</div>
-                      <code className="text-xs text-muted-foreground font-mono">{item.slug}</code>
+              {data.map((item) => {
+                const incomplete = isSubtypeIncomplete(item);
+                return (
+                  <li key={item.id} className={`p-3 hover:bg-muted/50 ${incomplete ? "bg-destructive/5" : ""}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium flex items-center gap-2">
+                          {item.name}
+                          {incomplete && (
+                            <Badge variant="outline" className="text-[10px] border-destructive/50 text-destructive">
+                              Needs definition
+                            </Badge>
+                          )}
+                        </div>
+                        <code className="text-xs text-muted-foreground font-mono">{item.slug}</code>
+                        {item.beauty_statement && (
+                          <p className="text-xs text-muted-foreground mt-1 italic truncate">"{item.beauty_statement}"</p>
+                        )}
+                      </div>
+                      {item.seasons && <Badge variant="outline">{(item.seasons as { name: string }).name}</Badge>}
                     </div>
-                    {item.seasons && <Badge variant="outline">{(item.seasons as { name: string }).name}</Badge>}
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </ScrollArea>
