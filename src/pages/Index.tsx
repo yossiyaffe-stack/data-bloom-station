@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle, Crown, Grid3X3, User, Eye, SwatchBook, History, AlertTriangle, CheckCircle2, XCircle, AlertCircle, ChevronDown } from "lucide-react";
+import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle, Crown, Grid3X3, User, Eye, SwatchBook, History, AlertTriangle, CheckCircle2, XCircle, AlertCircle, ChevronDown, CalendarDays, Star, Scan, Home, Thermometer, Repeat, Globe, TreePine, ImageIcon, ShoppingBag, Droplet } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,7 +13,11 @@ import {
   MetalsModal, DesignersModal, PrintsModal, BodyTypesModal,
   CompletionStatusModal, JunctionMappingsModal, SeasonDetailModal,
   MakeupMappingsModal, FabricMappingsModal, EraMappingsModal,
-  DesignerMappingsModal, GemstoneMappingsModal, ArtistMappingsModal, MetalMappingsModal
+  DesignerMappingsModal, GemstoneMappingsModal, ArtistMappingsModal, MetalMappingsModal,
+  // Lifestyle modals
+  OccasionsModal, StyleIconsModal, FaceShapesModal, FaceShapeRecommendationsModal,
+  InteriorDesignsModal, SeasonalDressingModal, AlternateSeasonsModal,
+  OccasionOutfitMappingsModal, StyleIconMappingsModal
 } from "@/components/dashboard/DataModals";
 
 const Collapsible = CollapsiblePrimitive.Root;
@@ -418,6 +422,125 @@ const Index = () => {
     },
   });
 
+  // ============= LIFESTYLE TABLE QUERIES =============
+  const { data: occasions } = useQuery({
+    queryKey: ["occasions"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("occasions").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: styleIcons } = useQuery({
+    queryKey: ["style_icons"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("style_icons").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: faceShapes } = useQuery({
+    queryKey: ["face_shapes"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("face_shapes").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: faceShapeRecommendations } = useQuery({
+    queryKey: ["face_shape_recommendations"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("face_shape_recommendations").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: interiorDesigns } = useQuery({
+    queryKey: ["interior_designs"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("interior_designs").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: seasonalDressingGuides } = useQuery({
+    queryKey: ["seasonal_dressing_guides"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("seasonal_dressing_guides").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: alternateSeasons } = useQuery({
+    queryKey: ["alternate_seasons"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("alternate_seasons").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: subtypeAccentColors } = useQuery({
+    queryKey: ["subtype_accent_colors"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_accent_colors").select("id");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // ============= LIFESTYLE COVERAGE QUERIES =============
+  const { data: occasionOutfitCoverage } = useQuery({
+    queryKey: ["occasion_outfit_coverage"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_occasion_outfits").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: styleIconCoverage } = useQuery({
+    queryKey: ["style_icon_coverage"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_style_icons").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: seasonalDressingCoverage } = useQuery({
+    queryKey: ["seasonal_dressing_coverage"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("seasonal_dressing_guides").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: interiorDesignCoverage } = useQuery({
+    queryKey: ["interior_design_coverage"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("interior_designs").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
+  const { data: accentColorCoverage } = useQuery({
+    queryKey: ["accent_color_coverage"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subtype_accent_colors").select("subtype_id");
+      if (error) throw error;
+      return new Set(data?.map(d => d.subtype_id)).size;
+    },
+  });
+
   const isLoading = !seasons;
   const totalSubtypes = subtypes?.length || 40;
 
@@ -522,6 +645,66 @@ const Index = () => {
     },
   ];
 
+  // Lifestyle & Personalization Stats
+  const lifestyleStats = [
+    { 
+      title: "Occasions", 
+      count: occasions?.length || 0, 
+      description: "Event styling categories",
+      icon: <CalendarDays className="h-5 w-5 text-rose-700" />,
+      color: "bg-rose-100"
+    },
+    { 
+      title: "Style Icons", 
+      count: styleIcons?.length || 0, 
+      description: "Celebrity inspirations",
+      icon: <Star className="h-5 w-5 text-amber-700" />,
+      color: "bg-amber-100"
+    },
+    { 
+      title: "Face Shapes", 
+      count: faceShapes?.length || 0, 
+      description: "Face shape classifications",
+      icon: <Scan className="h-5 w-5 text-violet-700" />,
+      color: "bg-violet-100"
+    },
+    { 
+      title: "Face Recommendations", 
+      count: faceShapeRecommendations?.length || 0, 
+      description: "Glasses, jewelry, hairstyles",
+      icon: <Eye className="h-5 w-5 text-indigo-700" />,
+      color: "bg-indigo-100"
+    },
+    { 
+      title: "Interior Designs", 
+      count: interiorDesigns?.length || 0, 
+      description: "Home styling by subtype",
+      icon: <Home className="h-5 w-5 text-teal-700" />,
+      color: "bg-teal-100"
+    },
+    { 
+      title: "Seasonal Guides", 
+      count: seasonalDressingGuides?.length || 0, 
+      description: "Weather-based styling",
+      icon: <Thermometer className="h-5 w-5 text-sky-700" />,
+      color: "bg-sky-100"
+    },
+    { 
+      title: "Alternate Seasons", 
+      count: alternateSeasons?.length || 0, 
+      description: "Dual-season mappings",
+      icon: <Repeat className="h-5 w-5 text-purple-700" />,
+      color: "bg-purple-100"
+    },
+    { 
+      title: "Accent Colors", 
+      count: subtypeAccentColors?.length || 0, 
+      description: "Signature accent colors",
+      icon: <Droplet className="h-5 w-5 text-blue-700" />,
+      color: "bg-blue-100"
+    },
+  ];
+
   const appDataStats = [
     { 
       title: "Client Profiles", 
@@ -599,6 +782,16 @@ const Index = () => {
         <GemstoneMappingsModal open={isOpen("gemstoneMappings")} onOpenChange={getOpenChange("gemstoneMappings")} />
         <ArtistMappingsModal open={isOpen("artistMappings")} onOpenChange={getOpenChange("artistMappings")} />
         <MetalMappingsModal open={isOpen("metalMappings")} onOpenChange={getOpenChange("metalMappings")} />
+        {/* Lifestyle Modals */}
+        <OccasionsModal open={isOpen("occasions")} onOpenChange={getOpenChange("occasions")} />
+        <StyleIconsModal open={isOpen("styleIcons")} onOpenChange={getOpenChange("styleIcons")} />
+        <FaceShapesModal open={isOpen("faceShapes")} onOpenChange={getOpenChange("faceShapes")} />
+        <FaceShapeRecommendationsModal open={isOpen("faceShapeRecommendations")} onOpenChange={getOpenChange("faceShapeRecommendations")} />
+        <InteriorDesignsModal open={isOpen("interiorDesigns")} onOpenChange={getOpenChange("interiorDesigns")} />
+        <SeasonalDressingModal open={isOpen("seasonalDressing")} onOpenChange={getOpenChange("seasonalDressing")} />
+        <AlternateSeasonsModal open={isOpen("alternateSeasons")} onOpenChange={getOpenChange("alternateSeasons")} />
+        <OccasionOutfitMappingsModal open={isOpen("occasionOutfitMappings")} onOpenChange={getOpenChange("occasionOutfitMappings")} />
+        <StyleIconMappingsModal open={isOpen("styleIconMappings")} onOpenChange={getOpenChange("styleIconMappings")} />
         {/* Header */}
 
         <div className="text-center mb-12">
@@ -753,7 +946,78 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Seasons Overview */}
+        {/* Lifestyle & Personalization Stats */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Star className="h-5 w-5" />
+            Lifestyle & Personalization
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {isLoading
+              ? Array(8).fill(0).map((_, i) => <StatCardSkeleton key={i} />)
+              : lifestyleStats.map((stat) => (
+                  <StatCard
+                    key={stat.title}
+                    {...stat}
+                    onClick={getClickHandler(stat.title)}
+                  />
+                ))
+            }
+          </div>
+        </div>
+
+        {/* Lifestyle Completion Status */}
+        <Card className="mb-8 border-2 border-purple-200 dark:border-purple-900">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30">
+            <CardTitle className="flex items-center gap-2 text-purple-800 dark:text-purple-200">
+              <Star className="h-5 w-5" />
+              Lifestyle Mapping Status
+            </CardTitle>
+            <CardDescription>Subtype-specific lifestyle and personalization mappings</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <CompletionItem
+                title="Style Icon Mappings"
+                current={styleIconCoverage || 0}
+                total={totalSubtypes}
+                priority={((styleIconCoverage || 0) / totalSubtypes) < 0.3 ? 'critical' : ((styleIconCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : 'medium'}
+                description="Celebrity inspirations per subtype"
+                onClick={() => openModalHandler("styleIconMappings")}
+              />
+              <CompletionItem
+                title="Occasion Outfits"
+                current={occasionOutfitCoverage || 0}
+                total={totalSubtypes}
+                priority={((occasionOutfitCoverage || 0) / totalSubtypes) < 0.3 ? 'critical' : ((occasionOutfitCoverage || 0) / totalSubtypes) < 0.5 ? 'high' : 'medium'}
+                description="Event-specific outfit recommendations"
+                onClick={() => openModalHandler("occasionOutfitMappings")}
+              />
+              <CompletionItem
+                title="Seasonal Dressing"
+                current={seasonalDressingCoverage || 0}
+                total={totalSubtypes}
+                priority={((seasonalDressingCoverage || 0) / totalSubtypes) < 0.3 ? 'critical' : 'medium'}
+                description="Weather-based styling guides"
+              />
+              <CompletionItem
+                title="Interior Designs"
+                current={interiorDesignCoverage || 0}
+                total={totalSubtypes}
+                priority={((interiorDesignCoverage || 0) / totalSubtypes) < 0.3 ? 'critical' : 'medium'}
+                description="Home styling per subtype"
+              />
+              <CompletionItem
+                title="Accent Colors"
+                current={accentColorCoverage || 0}
+                total={totalSubtypes}
+                priority={((accentColorCoverage || 0) / totalSubtypes) < 0.3 ? 'critical' : 'medium'}
+                description="Signature accent colors per subtype"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
         {seasons && seasons.length > 0 && (
           <Card className="mb-8">
             <CardHeader>

@@ -7,7 +7,12 @@ export type ModalKey =
   | "completionStatus" | "junctionMappings"
   | "seasonDetail"
   | "makeupMappings" | "fabricMappings" | "eraMappings" 
-  | "designerMappings" | "gemstoneMappings" | "artistMappings" | "metalMappings";
+  | "designerMappings" | "gemstoneMappings" | "artistMappings" | "metalMappings"
+  // Lifestyle tables
+  | "occasions" | "styleIcons" | "faceShapes" | "faceShapeRecommendations"
+  | "interiorDesigns" | "seasonalDressing" | "alternateSeasons"
+  | "culturalClothing" | "naturePhotos" | "eraPhotos" | "outfitLinks"
+  | "subtypeAccentColors" | "occasionOutfitMappings" | "styleIconMappings";
 
 export function useModalState() {
   const [openModal, setOpenModal] = useState<ModalKey | null>(null);
@@ -56,6 +61,18 @@ export function useModalState() {
     "Designers": "designers",
     "Prints": "prints",
     "Body Types": "bodyTypes",
+    // Lifestyle tables
+    "Occasions": "occasions",
+    "Style Icons": "styleIcons",
+    "Face Shapes": "faceShapes",
+    "Interior Designs": "interiorDesigns",
+    "Seasonal Guides": "seasonalDressing",
+    "Alternate Seasons": "alternateSeasons",
+    "Cultural Clothing": "culturalClothing",
+    "Nature Photos": "naturePhotos",
+    "Era Photos": "eraPhotos",
+    "Outfit Links": "outfitLinks",
+    "Accent Colors": "subtypeAccentColors",
   }), []);
 
   const getClickHandler = useCallback(
