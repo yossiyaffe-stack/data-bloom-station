@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { 
   Upload, Info, CheckCircle2, MessageSquare,
   Palette, Shirt, Paintbrush, PenTool, Gem, CircleDot, 
-  Grid3X3, Clock, User, Users, Calendar, Hexagon 
+  Grid3X3, Clock, User, Users, Calendar, Hexagon, Sun
 } from "lucide-react";
 import { TableImporter, TABLE_IMPORT_CONFIGS, ImportableTable } from "./TableImporter";
 
 const IMPORT_BUTTONS: { key: ImportableTable; label: string; icon: React.ElementType }[] = [
+  { key: 'seasons', label: 'Seasons', icon: Sun },
   { key: 'colors', label: 'Colors', icon: Palette },
   { key: 'fabrics', label: 'Fabrics', icon: Shirt },
   { key: 'artists', label: 'Artists', icon: Paintbrush },
