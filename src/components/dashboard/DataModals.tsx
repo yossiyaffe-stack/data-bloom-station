@@ -1919,6 +1919,179 @@ export const StyleIconMappingsModal = ({ open, onOpenChange }: ModalProps) => {
   );
 };
 
+// Cultural Clothing Modal
+export const CulturalClothingModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["cultural-clothing-list"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("cultural_clothing").select("*").order("name");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Cultural Clothing</DialogTitle>
+          <DialogDescription>Traditional garments from around the world</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
+            <ul className="divide-y">
+              {data.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="font-medium">{item.name}</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {item.culture && <Badge variant="outline" className="mr-1">{item.culture}</Badge>}
+                    {item.region && <span>• {item.region}</span>}
+                    {item.time_period && <span> • {item.time_period}</span>}
+                  </div>
+                  {item.description && <p className="text-sm text-muted-foreground mt-1">{item.description}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Nature Photos Modal
+export const NaturePhotosModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["nature-photos-list"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("nature_photos").select("*, seasons(name), subtypes(name)").order("title");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Nature Photos</DialogTitle>
+          <DialogDescription>Seasonal nature imagery for color inspiration</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
+            <ul className="divide-y">
+              {data.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="font-medium">{item.title || "Untitled"}</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    <Badge variant="outline" className="mr-1">{item.category}</Badge>
+                    {item.mood && <span>• {item.mood}</span>}
+                    {item.seasons && <span> • {(item.seasons as { name: string }).name}</span>}
+                  </div>
+                  {item.description && <p className="text-sm text-muted-foreground mt-1">{item.description}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Era Photos Modal
+export const EraPhotosModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["era-photos-list"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("era_photos").select("*, historical_eras(name)").order("title");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Era Photos</DialogTitle>
+          <DialogDescription>Historical fashion photography</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
+            <ul className="divide-y">
+              {data.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="font-medium">{item.title || "Untitled"}</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {item.historical_eras && <Badge variant="outline" className="mr-1">{(item.historical_eras as { name: string }).name}</Badge>}
+                    {item.year_approximate && <span>• ~{item.year_approximate}</span>}
+                    {item.source && <span> • {item.source}</span>}
+                  </div>
+                  {item.description && <p className="text-sm text-muted-foreground mt-1">{item.description}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Outfit Links Modal
+export const OutfitLinksModal = ({ open, onOpenChange }: ModalProps) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["outfit-links-list"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("outfit_links")
+        .select("*, subtypes(name), occasions(name), body_types(name)")
+        .order("product_name");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh]">
+        <DialogHeader>
+          <DialogTitle>Outfit Links</DialogTitle>
+          <DialogDescription>Shoppable outfit recommendations</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh]">
+          {isLoading ? <LoadingSkeleton /> : error ? <ErrorMessage /> : !data?.length ? <EmptyMessage /> : (
+            <ul className="divide-y">
+              {data.map((item) => (
+                <li key={item.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-medium">{item.product_name || "Unnamed product"}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {item.retailer && <Badge variant="outline" className="mr-1">{item.retailer}</Badge>}
+                        {item.price_tier && <span>• {item.price_tier}</span>}
+                        {item.subtypes && <span> • {(item.subtypes as { name: string }).name}</span>}
+                      </div>
+                    </div>
+                    {item.product_url && (
+                      <a href={item.product_url} target="_blank" rel="noreferrer" className="text-xs underline text-primary">Shop</a>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 // Helper components
 const LoadingSkeleton = () => (
   <div className="p-4 space-y-2">
