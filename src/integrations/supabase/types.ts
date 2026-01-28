@@ -106,7 +106,9 @@ export type Database = {
           notable_works: Json | null
           seasons_affinity: Json | null
           slug: string
+          source_app: string | null
           style: string | null
+          synced_at: string | null
           wikipedia_url: string | null
         }
         Insert: {
@@ -118,7 +120,9 @@ export type Database = {
           notable_works?: Json | null
           seasons_affinity?: Json | null
           slug: string
+          source_app?: string | null
           style?: string | null
+          synced_at?: string | null
           wikipedia_url?: string | null
         }
         Update: {
@@ -130,7 +134,9 @@ export type Database = {
           notable_works?: Json | null
           seasons_affinity?: Json | null
           slug?: string
+          source_app?: string | null
           style?: string | null
+          synced_at?: string | null
           wikipedia_url?: string | null
         }
         Relationships: []
@@ -143,7 +149,9 @@ export type Database = {
           id: string
           name: string
           slug: string
+          source_app: string | null
           style_recommendations: Json | null
+          synced_at: string | null
           system: string | null
         }
         Insert: {
@@ -153,7 +161,9 @@ export type Database = {
           id?: string
           name: string
           slug: string
+          source_app?: string | null
           style_recommendations?: Json | null
+          synced_at?: string | null
           system?: string | null
         }
         Update: {
@@ -163,7 +173,9 @@ export type Database = {
           id?: string
           name?: string
           slug?: string
+          source_app?: string | null
           style_recommendations?: Json | null
+          synced_at?: string | null
           system?: string | null
         }
         Relationships: []
@@ -234,6 +246,8 @@ export type Database = {
           name: string
           seasons: Json | null
           slug: string
+          source_app: string | null
+          synced_at: string | null
           warmth: string | null
         }
         Insert: {
@@ -247,6 +261,8 @@ export type Database = {
           name: string
           seasons?: Json | null
           slug: string
+          source_app?: string | null
+          synced_at?: string | null
           warmth?: string | null
         }
         Update: {
@@ -260,6 +276,8 @@ export type Database = {
           name?: string
           seasons?: Json | null
           slug?: string
+          source_app?: string | null
+          synced_at?: string | null
           warmth?: string | null
         }
         Relationships: []
@@ -274,6 +292,8 @@ export type Database = {
           seasons_affinity: Json | null
           signature_elements: Json | null
           slug: string
+          source_app: string | null
+          synced_at: string | null
           website_url: string | null
         }
         Insert: {
@@ -285,6 +305,8 @@ export type Database = {
           seasons_affinity?: Json | null
           signature_elements?: Json | null
           slug: string
+          source_app?: string | null
+          synced_at?: string | null
           website_url?: string | null
         }
         Update: {
@@ -296,6 +318,8 @@ export type Database = {
           seasons_affinity?: Json | null
           signature_elements?: Json | null
           slug?: string
+          source_app?: string | null
+          synced_at?: string | null
           website_url?: string | null
         }
         Relationships: []
@@ -312,6 +336,8 @@ export type Database = {
           name: string
           quality_notes: string | null
           slug: string
+          source_app: string | null
+          synced_at: string | null
         }
         Insert: {
           care_level?: string | null
@@ -324,6 +350,8 @@ export type Database = {
           name: string
           quality_notes?: string | null
           slug: string
+          source_app?: string | null
+          synced_at?: string | null
         }
         Update: {
           care_level?: string | null
@@ -336,6 +364,8 @@ export type Database = {
           name?: string
           quality_notes?: string | null
           slug?: string
+          source_app?: string | null
+          synced_at?: string | null
         }
         Relationships: []
       }
@@ -348,7 +378,9 @@ export type Database = {
           name: string
           seasons: Json | null
           slug: string
+          source_app: string | null
           symbolism: string | null
+          synced_at: string | null
         }
         Insert: {
           color_hex?: string | null
@@ -358,7 +390,9 @@ export type Database = {
           name: string
           seasons?: Json | null
           slug: string
+          source_app?: string | null
           symbolism?: string | null
+          synced_at?: string | null
         }
         Update: {
           color_hex?: string | null
@@ -368,7 +402,9 @@ export type Database = {
           name?: string
           seasons?: Json | null
           slug?: string
+          source_app?: string | null
           symbolism?: string | null
+          synced_at?: string | null
         }
         Relationships: []
       }
@@ -382,7 +418,9 @@ export type Database = {
           period: string | null
           seasons_affinity: Json | null
           slug: string
+          source_app: string | null
           style_characteristics: Json | null
+          synced_at: string | null
         }
         Insert: {
           color_palette_notes?: string | null
@@ -393,7 +431,9 @@ export type Database = {
           period?: string | null
           seasons_affinity?: Json | null
           slug: string
+          source_app?: string | null
           style_characteristics?: Json | null
+          synced_at?: string | null
         }
         Update: {
           color_palette_notes?: string | null
@@ -404,7 +444,9 @@ export type Database = {
           period?: string | null
           seasons_affinity?: Json | null
           slug?: string
+          source_app?: string | null
           style_characteristics?: Json | null
+          synced_at?: string | null
         }
         Relationships: []
       }
@@ -527,6 +569,8 @@ export type Database = {
           price_tier: string | null
           seasons: Json | null
           slug: string
+          source_app: string | null
+          synced_at: string | null
           warmth: string | null
         }
         Insert: {
@@ -538,6 +582,8 @@ export type Database = {
           price_tier?: string | null
           seasons?: Json | null
           slug: string
+          source_app?: string | null
+          synced_at?: string | null
           warmth?: string | null
         }
         Update: {
@@ -549,6 +595,8 @@ export type Database = {
           price_tier?: string | null
           seasons?: Json | null
           slug?: string
+          source_app?: string | null
+          synced_at?: string | null
           warmth?: string | null
         }
         Relationships: []
@@ -633,6 +681,8 @@ export type Database = {
           keywords: Json | null
           name: string
           slug: string
+          source_app: string | null
+          synced_at: string | null
         }
         Insert: {
           category?: string | null
@@ -642,6 +692,8 @@ export type Database = {
           keywords?: Json | null
           name: string
           slug: string
+          source_app?: string | null
+          synced_at?: string | null
         }
         Update: {
           category?: string | null
@@ -651,6 +703,8 @@ export type Database = {
           keywords?: Json | null
           name?: string
           slug?: string
+          source_app?: string | null
+          synced_at?: string | null
         }
         Relationships: []
       }
@@ -1124,8 +1178,10 @@ export type Database = {
           name: string
           season_id: string | null
           slug: string
+          source_app: string | null
           style_donts: Json | null
           style_dos: Json | null
+          synced_at: string | null
           unique_features: string | null
           updated_at: string | null
         }
@@ -1144,8 +1200,10 @@ export type Database = {
           name: string
           season_id?: string | null
           slug: string
+          source_app?: string | null
           style_donts?: Json | null
           style_dos?: Json | null
+          synced_at?: string | null
           unique_features?: string | null
           updated_at?: string | null
         }
@@ -1164,8 +1222,10 @@ export type Database = {
           name?: string
           season_id?: string | null
           slug?: string
+          source_app?: string | null
           style_donts?: Json | null
           style_dos?: Json | null
+          synced_at?: string | null
           unique_features?: string | null
           updated_at?: string | null
         }
@@ -1178,6 +1238,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sync_sources: {
+        Row: {
+          app_name: string
+          app_url: string
+          created_at: string | null
+          export_endpoint: string
+          id: string
+          last_sync_at: string | null
+          sync_status: string | null
+        }
+        Insert: {
+          app_name: string
+          app_url: string
+          created_at?: string | null
+          export_endpoint?: string
+          id?: string
+          last_sync_at?: string | null
+          sync_status?: string | null
+        }
+        Update: {
+          app_name?: string
+          app_url?: string
+          created_at?: string | null
+          export_endpoint?: string
+          id?: string
+          last_sync_at?: string | null
+          sync_status?: string | null
+        }
+        Relationships: []
       }
       training_samples: {
         Row: {
