@@ -105,25 +105,65 @@ serve(async (req) => {
       
       try {
         // Fetch data from source app's export endpoint
-        const exportUrl = `${source.app_url}${source.export_endpoint}`;
+        // Try /all sub-path first (Streams format), fall back to root
+        let exportUrl = `${source.app_url}${source.export_endpoint}`;
         console.log(`Fetching from: ${exportUrl}`);
         
-        const response = await fetch(exportUrl);
+        let response = await fetch(exportUrl);
         if (!response.ok) {
           throw new Error(`Failed to fetch from source: ${response.status}`);
         }
         
-        const exportData = await response.json();
+        let exportData = await response.json();
         
-        // Sync subtypes
-        if (exportData.subtypes?.length > 0) {
-          const subtypeResult = await syncSubtypes(supabase, exportData.subtypes, source.app_name);
+        // Check if this is a Streams-style export with sub-paths
+        if (exportData.endpoints && !exportData.subtypes) {
+          // Fetch from /all sub-path
+          const allUrl = `${exportUrl}/all`;
+          console.log(`Streams format detected, fetching from: ${allUrl}`);
+          response = await fetch(allUrl);
+          if (response.ok) {
+            exportData = await response.json();
+          }
+        }
+        
+        // Handle Streams nested subtypes format (by season)
+        let subtypesToSync: any[] = [];
+        if (exportData.subtypes) {
+          if (Array.isArray(exportData.subtypes)) {
+            subtypesToSync = exportData.subtypes;
+          } else {
+            // Streams format: { spring: [...], summer: [...], autumn: [...], winter: [...] }
+            for (const [season, types] of Object.entries(exportData.subtypes)) {
+              if (Array.isArray(types)) {
+                subtypesToSync.push(...(types as any[]).map(t => ({ ...t, season })));
+              }
+            }
+          }
+        }
+        
+        if (subtypesToSync.length > 0) {
+          const subtypeResult = await syncSubtypesFromStreams(supabase, subtypesToSync, source.app_name);
           results.push(subtypeResult);
         }
 
-        // Sync colors
-        if (exportData.colors?.length > 0) {
-          const colorResult = await syncColors(supabase, exportData.colors, source.app_name);
+        // Handle Streams grouped colors format OR flat array
+        let colorsToSync: any[] = [];
+        if (exportData.colors) {
+          if (Array.isArray(exportData.colors)) {
+            colorsToSync = exportData.colors;
+          } else {
+            // Streams format: { skinTones: [...], neutrals: [...], etc. }
+            for (const [category, colors] of Object.entries(exportData.colors)) {
+              if (Array.isArray(colors)) {
+                colorsToSync.push(...(colors as any[]).map(c => ({ ...c, category })));
+              }
+            }
+          }
+        }
+        
+        if (colorsToSync.length > 0) {
+          const colorResult = await syncColors(supabase, colorsToSync, source.app_name);
           results.push(colorResult);
         }
 
@@ -225,34 +265,83 @@ async function syncSubtypes(supabase: any, subtypes: any[], sourceName: string):
   return result;
 }
 
+// Handle Streams-style subtypes (with id instead of slug, nested palette)
+async function syncSubtypesFromStreams(supabase: any, subtypes: any[], sourceName: string): Promise<SyncResult> {
+  const result: SyncResult = { table: "subtypes", inserted: 0, updated: 0, errors: [] };
+  
+  for (const subtype of subtypes) {
+    try {
+      const slug = subtype.id || subtype.slug;
+      const { error } = await supabase
+        .from("subtypes")
+        .upsert({
+          slug,
+          name: subtype.name,
+          beauty_statement: subtype.beautyStatement || subtype.beauty_statement,
+          unique_features: subtype.uniqueFeatures || subtype.unique_features,
+          effects: subtype.effects,
+          style_dos: subtype.styleDos || subtype.style_dos,
+          style_donts: subtype.styleDonts || subtype.style_donts,
+          color_combinations: subtype.palette || subtype.color_combinations,
+          designers: subtype.designers,
+          eras: subtype.eras,
+          art_references: subtype.artists || subtype.art_references,
+          jewelry_styles: subtype.jewelry_styles,
+          home_decor: subtype.home_decor,
+          bridging_to: subtype.bridging_to,
+          source_app: sourceName,
+          synced_at: new Date().toISOString()
+        }, { onConflict: "slug" });
+      
+      if (error) {
+        result.errors.push(`Subtype ${slug}: ${error.message}`);
+      } else {
+        result.updated++;
+      }
+    } catch (e) {
+      result.errors.push(`Subtype ${subtype.id || subtype.slug}: ${e}`);
+    }
+  }
+  
+  return result;
+}
+
 async function syncColors(supabase: any, colors: any[], sourceName: string): Promise<SyncResult> {
   const result: SyncResult = { table: "colors", inserted: 0, updated: 0, errors: [] };
   
   for (const color of colors) {
     try {
+      // Generate slug from name if not provided
+      const slug = color.slug || color.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      
+      // Handle Streams format with nested hsl object
+      const hsl_h = color.hsl_h ?? color.hsl?.h;
+      const hsl_s = color.hsl_s ?? color.hsl?.s;
+      const hsl_l = color.hsl_l ?? color.hsl?.l;
+      
       const { error } = await supabase
         .from("colors")
         .upsert({
-          slug: color.slug,
+          slug,
           name: color.name,
           hex: color.hex,
           category: color.category || "neutral",
           warmth: color.warmth,
-          hsl_h: color.hsl_h,
-          hsl_s: color.hsl_s,
-          hsl_l: color.hsl_l,
+          hsl_h,
+          hsl_s,
+          hsl_l,
           seasons: color.seasons,
           source_app: sourceName,
           synced_at: new Date().toISOString()
         }, { onConflict: "slug" });
       
       if (error) {
-        result.errors.push(`Color ${color.slug}: ${error.message}`);
+        result.errors.push(`Color ${slug}: ${error.message}`);
       } else {
         result.updated++;
       }
     } catch (e) {
-      result.errors.push(`Color ${color.slug}: ${e}`);
+      result.errors.push(`Color ${color.name}: ${e}`);
     }
   }
   
