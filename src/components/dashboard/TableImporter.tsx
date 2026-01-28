@@ -361,6 +361,12 @@ export const TABLE_IMPORT_CONFIGS = {
     displayName: 'Face Shapes',
     requiredFields: ['name'],
     optionalFields: ['description', 'characteristics', 'visual_traits']
+  },
+  seasons: {
+    tableName: 'seasons',
+    displayName: 'Seasons',
+    requiredFields: ['name'],
+    optionalFields: ['description', 'undertone', 'characteristics']
   }
 } as const;
 
