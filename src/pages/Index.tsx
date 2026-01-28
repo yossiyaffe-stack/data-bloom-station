@@ -598,6 +598,7 @@ const Index = () => {
         <DesignerMappingsModal open={isOpen("designerMappings")} onOpenChange={getOpenChange("designerMappings")} />
         <GemstoneMappingsModal open={isOpen("gemstoneMappings")} onOpenChange={getOpenChange("gemstoneMappings")} />
         <ArtistMappingsModal open={isOpen("artistMappings")} onOpenChange={getOpenChange("artistMappings")} />
+        <MetalMappingsModal open={isOpen("metalMappings")} onOpenChange={getOpenChange("metalMappings")} />
         {/* Header */}
 
         <div className="text-center mb-12">
