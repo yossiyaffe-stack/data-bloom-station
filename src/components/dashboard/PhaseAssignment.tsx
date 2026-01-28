@@ -21,7 +21,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Layers, Check, X } from "lucide-react";
+import { Layers, Check, X, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface PhaseAssignmentModalProps {
   open: boolean;
@@ -115,11 +126,34 @@ export const PhaseAssignmentModal = ({ open, onOpenChange }: PhaseAssignmentModa
     },
   });
 
+  // Delete subtype mutation
+  const deleteSubtypeMutation = useMutation({
+    mutationFn: async (subtypeId: string) => {
+      const { error } = await supabase
+        .from("subtypes")
+        .delete()
+        .eq("id", subtypeId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subtypes-for-phases", selectedSeason] });
+      queryClient.invalidateQueries({ queryKey: ["subtypes"] });
+      toast.success("Subtype deleted");
+    },
+    onError: (error) => {
+      toast.error("Failed to delete subtype: " + (error as Error).message);
+    },
+  });
+
   const handlePhaseChange = (subtypeId: string, phaseId: string) => {
     updatePhaseMutation.mutate({ 
       subtypeId, 
       phaseId: phaseId === "none" ? null : phaseId 
     });
+  };
+
+  const handleDeleteSubtype = (subtypeId: string) => {
+    deleteSubtypeMutation.mutate(subtypeId);
   };
 
   const getSubtypesByPhase = (phaseId: string | null) => {
@@ -199,7 +233,9 @@ export const PhaseAssignmentModal = ({ open, onOpenChange }: PhaseAssignmentModa
                           subtype={subtype}
                           phases={phases || []}
                           onPhaseChange={handlePhaseChange}
+                          onDelete={handleDeleteSubtype}
                           isUpdating={updatePhaseMutation.isPending}
+                          isDeleting={deleteSubtypeMutation.isPending}
                         />
                       ))}
                       {getSubtypesByPhase(null).length === 0 && (
@@ -230,7 +266,9 @@ export const PhaseAssignmentModal = ({ open, onOpenChange }: PhaseAssignmentModa
                             phases={phases || []}
                             currentPhaseId={phase.id}
                             onPhaseChange={handlePhaseChange}
+                            onDelete={handleDeleteSubtype}
                             isUpdating={updatePhaseMutation.isPending}
+                            isDeleting={deleteSubtypeMutation.isPending}
                           />
                         ))}
                         {getSubtypesByPhase(phase.id).length === 0 && (
@@ -263,13 +301,46 @@ interface SubtypeCardProps {
   phases: Phase[];
   currentPhaseId?: string;
   onPhaseChange: (subtypeId: string, phaseId: string) => void;
+  onDelete: (subtypeId: string) => void;
   isUpdating: boolean;
+  isDeleting: boolean;
 }
 
-const SubtypeCard = ({ subtype, phases, currentPhaseId, onPhaseChange, isUpdating }: SubtypeCardProps) => {
+const SubtypeCard = ({ subtype, phases, currentPhaseId, onPhaseChange, onDelete, isUpdating, isDeleting }: SubtypeCardProps) => {
   return (
     <div className="p-2 rounded-md bg-muted/50 hover:bg-muted transition-colors">
-      <div className="font-medium text-sm truncate">{subtype.name}</div>
+      <div className="flex items-center justify-between gap-2">
+        <div className="font-medium text-sm truncate flex-1">{subtype.name}</div>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-muted-foreground hover:text-destructive"
+              disabled={isDeleting}
+            >
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Subtype</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete "{subtype.name}"? This action cannot be undone and will remove all associated mappings.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => onDelete(subtype.id)}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
       <div className="mt-1">
         <Select
           value={subtype.phase_id || "none"}
