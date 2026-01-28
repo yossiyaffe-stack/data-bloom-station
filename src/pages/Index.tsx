@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Database, Palette, Shirt, Gem, Brush, Clock, PenTool, Image, Users, Camera, Lightbulb, Sparkles, Heart, Circle, Crown, Grid3X3, User, Eye, SwatchBook, History, AlertTriangle, CheckCircle2, XCircle, AlertCircle, ChevronDown, CalendarDays, Star, Scan, Home, Thermometer, Repeat, Globe, TreePine, ImageIcon, ShoppingBag, Droplet, Layers } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import * as CollapsiblePrimitive from "@radix-ui/react-collapsible";
 import { useModalState } from "@/components/dashboard/useModalState";
+import { DataUploadInstructions } from "@/components/dashboard/DataUploadInstructions";
+import { TableImporter, TABLE_IMPORT_CONFIGS, ImportableTable } from "@/components/dashboard/TableImporter";
 import {
   SeasonsModal, SubtypesModal, ColorsModal, FabricsModal, GemstonesModal,
   ArtistsModal, ErasModal, PaintingsModal, SephirotModal, MakeupModal,
@@ -171,6 +174,8 @@ const CompletionItem = ({ title, current, total, priority, description, onClick 
 
 const Index = () => {
   const { isOpen, getOpenChange, getClickHandler, openModalHandler, openSeasonDetail, selectedSeasonId } = useModalState();
+  const [importerOpen, setImporterOpen] = useState<ImportableTable | null>(null);
+  const queryClient = useQueryClient();
 
   const { data: seasons } = useQuery({
     queryKey: ["seasons"],
@@ -865,9 +870,19 @@ const Index = () => {
         <EraPhotosModal open={isOpen("eraPhotos")} onOpenChange={getOpenChange("eraPhotos")} />
         <OutfitLinksModal open={isOpen("outfitLinks")} onOpenChange={getOpenChange("outfitLinks")} />
         <PhaseAssignmentModal open={isOpen("phaseAssignment")} onOpenChange={getOpenChange("phaseAssignment")} />
-        {/* Header */}
+        
+        {/* Table Importers */}
+        {importerOpen && (
+          <TableImporter
+            {...TABLE_IMPORT_CONFIGS[importerOpen]}
+            open={true}
+            onOpenChange={(open) => !open && setImporterOpen(null)}
+            onSuccess={() => queryClient.invalidateQueries()}
+          />
+        )}
 
-        <div className="text-center mb-12">
+        {/* Header */}
+        <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-rose-500 via-purple-500 to-blue-500 flex items-center justify-center">
               <Palette className="h-6 w-6 text-white" />
@@ -893,6 +908,9 @@ const Index = () => {
             Manage Subtype Phases
           </Button>
         </div>
+
+        {/* Data Upload Instructions */}
+        <DataUploadInstructions />
 
         {/* Attention Needed Section */}
         <Card className="mb-8 border-2 border-orange-200 dark:border-orange-900">
