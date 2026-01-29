@@ -12,10 +12,38 @@ serve(async (req) => {
   }
 
   try {
+    // Require authentication for all operations
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Authorization required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
     );
+
+    // Verify the user is authenticated
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid or expired token" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ success: false, error: "User ID not found in token" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     const url = new URL(req.url);
     const resource = url.searchParams.get("resource");
@@ -95,9 +123,11 @@ serve(async (req) => {
       const body = await req.json();
 
       if (resource === "profile") {
+        // Ensure owner_id is set to the authenticated user
+        const profileData = { ...body, owner_id: userId };
         const { data, error } = await supabase
           .from("client_profiles")
-          .upsert(body, { onConflict: "external_id" })
+          .upsert(profileData, { onConflict: "external_id" })
           .select()
           .single();
         
@@ -109,9 +139,10 @@ serve(async (req) => {
       }
 
       if (resource === "photo") {
+        const photoData = { ...body, owner_id: userId };
         const { data, error } = await supabase
           .from("photo_analyses")
-          .insert(body)
+          .insert(photoData)
           .select()
           .single();
         
@@ -123,9 +154,10 @@ serve(async (req) => {
       }
 
       if (resource === "palette") {
+        const paletteData = { ...body, owner_id: userId };
         const { data, error } = await supabase
           .from("saved_palettes")
-          .insert(body)
+          .insert(paletteData)
           .select()
           .single();
         
@@ -137,9 +169,10 @@ serve(async (req) => {
       }
 
       if (resource === "session") {
+        const sessionData = { ...body, owner_id: userId };
         const { data, error } = await supabase
           .from("session_history")
-          .insert(body)
+          .insert(sessionData)
           .select()
           .single();
         
@@ -181,6 +214,7 @@ serve(async (req) => {
         );
       }
 
+      // RLS will enforce ownership check
       const { data, error } = await supabase
         .from(table)
         .update(body)
@@ -219,6 +253,7 @@ serve(async (req) => {
         );
       }
 
+      // RLS will enforce ownership check
       const { error } = await supabase
         .from(table)
         .delete()

@@ -23,6 +23,7 @@ export type Database = {
           corrected_subtype_id: string | null
           correction_reason: string | null
           created_at: string | null
+          created_by: string | null
           id: string
           photo_analysis_id: string | null
           training_sample_id: string | null
@@ -35,6 +36,7 @@ export type Database = {
           corrected_subtype_id?: string | null
           correction_reason?: string | null
           created_at?: string | null
+          created_by?: string | null
           id?: string
           photo_analysis_id?: string | null
           training_sample_id?: string | null
@@ -47,6 +49,7 @@ export type Database = {
           corrected_subtype_id?: string | null
           correction_reason?: string | null
           created_at?: string | null
+          created_by?: string | null
           id?: string
           photo_analysis_id?: string | null
           training_sample_id?: string | null
@@ -241,6 +244,7 @@ export type Database = {
           external_id: string | null
           id: string
           name: string | null
+          owner_id: string | null
           quiz_answers: Json | null
           updated_at: string | null
         }
@@ -253,6 +257,7 @@ export type Database = {
           external_id?: string | null
           id?: string
           name?: string | null
+          owner_id?: string | null
           quiz_answers?: Json | null
           updated_at?: string | null
         }
@@ -265,6 +270,7 @@ export type Database = {
           external_id?: string | null
           id?: string
           name?: string | null
+          owner_id?: string | null
           quiz_answers?: Json | null
           updated_at?: string | null
         }
@@ -720,6 +726,24 @@ export type Database = {
           },
         ]
       }
+      internal_secrets: {
+        Row: {
+          created_at: string
+          key: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          key: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          key?: string
+          value?: string
+        }
+        Relationships: []
+      }
       makeup_recommendations: {
         Row: {
           category: string
@@ -1062,6 +1086,7 @@ export type Database = {
           eye_color: string | null
           hair_color: string | null
           id: string
+          owner_id: string | null
           photo_url: string | null
           skin_undertone: string | null
         }
@@ -1074,6 +1099,7 @@ export type Database = {
           eye_color?: string | null
           hair_color?: string | null
           id?: string
+          owner_id?: string | null
           photo_url?: string | null
           skin_undertone?: string | null
         }
@@ -1086,6 +1112,7 @@ export type Database = {
           eye_color?: string | null
           hair_color?: string | null
           id?: string
+          owner_id?: string | null
           photo_url?: string | null
           skin_undertone?: string | null
         }
@@ -1143,6 +1170,7 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          owner_id: string | null
         }
         Insert: {
           client_profile_id?: string | null
@@ -1151,6 +1179,7 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          owner_id?: string | null
         }
         Update: {
           client_profile_id?: string | null
@@ -1159,6 +1188,7 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          owner_id?: string | null
         }
         Relationships: [
           {
@@ -1330,6 +1360,7 @@ export type Database = {
           created_at: string | null
           id: string
           notes: string | null
+          owner_id: string | null
           recommendations: Json | null
           session_date: string | null
           session_type: string | null
@@ -1340,6 +1371,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           notes?: string | null
+          owner_id?: string | null
           recommendations?: Json | null
           session_date?: string | null
           session_type?: string | null
@@ -1350,6 +1382,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           notes?: string | null
+          owner_id?: string | null
           recommendations?: Json | null
           session_date?: string | null
           session_type?: string | null
@@ -1977,6 +2010,7 @@ export type Database = {
           confidence_score: number | null
           contrast_level: string | null
           created_at: string | null
+          created_by: string | null
           eye_color: string | null
           hair_color: string | null
           id: string
@@ -1991,6 +2025,7 @@ export type Database = {
           confidence_score?: number | null
           contrast_level?: string | null
           created_at?: string | null
+          created_by?: string | null
           eye_color?: string | null
           hair_color?: string | null
           id?: string
@@ -2005,6 +2040,7 @@ export type Database = {
           confidence_score?: number | null
           contrast_level?: string | null
           created_at?: string | null
+          created_by?: string | null
           eye_color?: string | null
           hair_color?: string | null
           id?: string
