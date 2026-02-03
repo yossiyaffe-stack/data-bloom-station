@@ -1973,36 +1973,6 @@ export type Database = {
           },
         ]
       }
-      sync_sources: {
-        Row: {
-          app_name: string
-          app_url: string
-          created_at: string | null
-          export_endpoint: string
-          id: string
-          last_sync_at: string | null
-          sync_status: string | null
-        }
-        Insert: {
-          app_name: string
-          app_url: string
-          created_at?: string | null
-          export_endpoint?: string
-          id?: string
-          last_sync_at?: string | null
-          sync_status?: string | null
-        }
-        Update: {
-          app_name?: string
-          app_url?: string
-          created_at?: string | null
-          export_endpoint?: string
-          id?: string
-          last_sync_at?: string | null
-          sync_status?: string | null
-        }
-        Relationships: []
-      }
       training_samples: {
         Row: {
           assigned_season_id: string | null
